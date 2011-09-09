@@ -1,5 +1,5 @@
 /*
- * PageObject v0.1
+ * PageObject v0
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
@@ -61,7 +61,7 @@ function turnToPageObject(object, options) {
   if (!$.isFunction(opts.templateFunction)) throw "POE03: templateFunction not configured";
 
   // template option is mandatory
-  if (opts.template == null) throw "POE04: tmpl option not set";
+  if (opts.template == null) throw "POE04: template option not set";
 
   // template context should be a plain object
   if (!$.isPlainObject(opts.context)) opts.context = {};
