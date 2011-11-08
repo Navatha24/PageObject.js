@@ -88,14 +88,20 @@
 
     // prepare the container
     // find it in the DOM if selector specified
-    if (opts.container) {
+    if (typeof opts.container === 'string') {
       object.DOM.container = $(opts.container);
       if (!object.DOM.container.size()) {
         throw "POE05: container not found";
       }
 
-    // or create the container if selector omitted
-    } else {
+    }
+    // or create it using a constructor function if specified
+    else if ($.isFunction(opts.container)) {
+      object.DOM.container = opts.container();
+    }
+
+    // or create it if selector omitted
+    else {
       object.DOM.container = $(window.document.createElement(opts.domElement));
     }
 
