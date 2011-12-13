@@ -2,7 +2,7 @@
 /*jslint browser: true, indent: 2 */
 
 /*
- * PageObject v0
+ * PageObject v0.1
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
@@ -30,8 +30,7 @@
 
   // extract jQuery DOM parts from container using a map of selectors
   function extract(container, selectors) {
-    var domParts = {},
-      name;
+    var domParts = {}, name;
 
     for (name in selectors) {
       if (typeof name !== 'string' || !/^[A-z\.]+$/.test(name)) {
@@ -39,14 +38,14 @@
       }
       if ($.isArray(selectors[name]) && selectors[name].length === 2) {
         domParts[name] = {};
-        container.find(selectors[name][0]).each(function () {
-          var id = selectors[name][1]($(this));
-          domParts[name][id] = $(this);
+        $(container).find(selectors[name][0]).each(function () {
+          var id = selectors[name][1](this);
+          domParts[name][id] = this;
         });
       } else if ($.isPlainObject(selectors[name])) {
         domParts[name] = extract(container, selectors[name]);
       } else {
-        domParts[name] = container.find(selectors[name]);
+        domParts[name] = $(container).find(selectors[name]);
         if (domParts[name].length === 0) {
           throw "POE11: DOM parts weren't found for selector `" + name + "`";
         }
@@ -89,11 +88,11 @@
     // prepare the container
     // find it in the DOM if selector specified
     if (typeof opts.container === 'string') {
-      object.DOM.container = $(opts.container);
-      if (!object.DOM.container.size()) {
+      var $container = $(opts.container);
+      if (!$container.size()) {
         throw "POE05: container not found";
       }
-
+      object.DOM.container = $container[0];
     }
     // or create it using a constructor function if specified
     else if ($.isFunction(opts.container)) {
@@ -102,7 +101,7 @@
 
     // or create it if selector omitted
     else {
-      object.DOM.container = $(window.document.createElement(opts.domElement));
+      object.DOM.container = window.document.createElement(opts.domElement);
     }
 
     // hide it if necessary
@@ -120,12 +119,12 @@
     switch (true) {
 
     case typeof opts.template === 'string':
-      object.DOM.container.html(opts.templateFunction(opts.template, opts.context));
+      object.DOM.container.innerHTML = opts.templateFunction(opts.template, opts.context);
       break;
 
     // integration with Jammit JST
     case $.isFunction(opts.template):
-      object.DOM.container.html(opts.template(opts.context));
+      object.DOM.container.innerHTML = opts.template(opts.context);
       break;
 
     default:
