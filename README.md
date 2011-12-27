@@ -4,6 +4,6 @@ While creating rich web applications we always single out page blocks. We always
 
 PageObject would help you if for such cases you used to render client-side templates and then revive their rendered results.
 
-Please refer to demos and source code to understand how things work. More documentation and demos will follow later.
+Please refer to demos and source code to understand how things work. More documentation and examples will follow.
 
-Noteworthy is that currently PageObject utilizes jQuery heavily but isn't a jQuery plugin. That's why it is referred to as `$.PageObject`. Although I'm feeling totally comfortable with jQuery, I suppose PageObject might become aware of other popular frameworks as well.
+Noteworthy is that currently PageObject utilizes jQuery heavily but isn't a jQuery plugin. That's why it is referred to as `$.PageObject`. Although I'm feeling totally comfortable with jQuery, I guess PageObject might become aware of other popular frameworks as well. So you are welcome to contribute.

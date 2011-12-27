@@ -1,13 +1,13 @@
 /*global jQuery: false */
-/*jslint browser: true, indent: 2 */
+/*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.1
+ * PageObject v0.2
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Fri Jul 22 16:37:50 EEST 2011
+ * Date: Tue Dec 27 04:39:27 EET 2011
  */
 (function (window, $, undefined) {
   "use strict";
@@ -23,34 +23,42 @@
     hide: false
   };
 
-  // check if microtemplating function of John Resig is defined to use it as default
+  // Use microtemplating function of John Resig as default if it's defined.
   if ($.isFunction(window.tmpl)) {
     defaultOptions.templateFunction = window.tmpl;
   }
 
-  // extract jQuery DOM parts from container using a map of selectors
+  // Extract jQuery DOM parts from a container using a map of selectors.
   function extract(container, selectors) {
     var domParts = {}, name;
 
-    for (name in selectors) {
+    $.each(selectors, function (name) {
+
       if (typeof name !== 'string' || !/^[A-z\.]+$/.test(name)) {
         throw "POE10: incorrect selector `" + name + "`";
       }
+
       if ($.isArray(selectors[name]) && selectors[name].length === 2) {
         domParts[name] = {};
         $(container).find(selectors[name][0]).each(function () {
           var id = selectors[name][1](this);
           domParts[name][id] = this;
         });
-      } else if ($.isPlainObject(selectors[name])) {
+      }
+
+      else if ($.isPlainObject(selectors[name])) {
         domParts[name] = extract(container, selectors[name]);
-      } else {
+      }
+
+      else {
         domParts[name] = $(container).find(selectors[name]);
         if (domParts[name].length === 0) {
           throw "POE11: DOM parts weren't found for selector `" + name + "`";
         }
       }
-    }
+
+    });
+
     return domParts;
   }
 
@@ -65,64 +73,85 @@
     }
 
     var opts = $.extend(true, {}, defaultOptions, options),
-      domParts;
+      domParts,
+      $container;
 
-    // cannot proceed without template engine
+    // Cannot proceed without template engine.
     if (!$.isFunction(opts.templateFunction)) {
       throw "POE03: templateFunction not configured";
     }
 
-    // template option is mandatory
+    // Template option is mandatory.
     if (!opts.template) {
       throw "POE04: template option not set";
     }
 
-    // template context should be a plain object
+    // Template context should be a plain object.
     if (!$.isPlainObject(opts.context)) {
       opts.context = {};
     }
 
-    // namespace for jQuery DOM parts which are to be extracted from the rendered template
+    // Namespace for jQuery DOM parts which are to be extracted
+    // from the rendered template.
     object.DOM = {};
 
-    // prepare the container
-    // find it in the DOM if selector specified
-    if (typeof opts.container === 'string') {
-      var $container = $(opts.container);
+
+    // PREPARE THE CONTAINER.
+
+    // Returns true if it is a DOM element,
+    // http://stackoverflow.com/a/384380/133257
+    function isElement(o) {
+      return (
+        typeof window.HTMLElement === "object" ? o instanceof window.HTMLElement : // DOM2
+        typeof o === "object" && o.nodeType === 1 && typeof o.nodeName === "string"
+      );
+    }
+
+    // All we need is a DOM element.
+    if (isElement(opts.container)) {
+      object.DOM.container = opts.container;
+    }
+
+    // Find it in the DOM if selector specified.
+    else if (typeof opts.container === 'string') {
+      $container = $(opts.container);
       if (!$container.size()) {
         throw "POE05: container not found";
       }
       object.DOM.container = $container[0];
     }
-    // or create it using a constructor function if specified
+
+    // Or create it using a constructor function if specified.
     else if ($.isFunction(opts.container)) {
       object.DOM.container = opts.container();
     }
 
-    // or create it if selector omitted
+    // Or create it if selector omitted.
     else {
       object.DOM.container = window.document.createElement(opts.domElement);
     }
 
-    // hide it if necessary
+    // Hide it if necessary.
     if (opts.hide) {
-      object.DOM.container.hide();
+      $(object.DOM.container).hide();
     }
 
-    // set the container class if needed
+    // Set the container class if needed.
     if (opts.containerClass) {
-      object.DOM.container.addClass(opts.containerClass);
+      $(object.DOM.container).addClass(opts.containerClass);
     }
 
 
-    // template should be either a string or a function
+    // RENDER TEMPLATE.
+
+    // Template should be either a string or a function.
     switch (true) {
 
     case typeof opts.template === 'string':
       object.DOM.container.innerHTML = opts.templateFunction(opts.template, opts.context);
       break;
 
-    // integration with Jammit JST
+    // Integration with Jammit JST.
     case $.isFunction(opts.template):
       object.DOM.container.innerHTML = opts.template(opts.context);
       break;
@@ -130,6 +159,9 @@
     default:
       throw "POE06: template is invalid";
     }
+
+
+    // EXTRACT DOM PARTS.
 
     domParts = extract(object.DOM.container, opts.selectors);
     $.extend(true, object.DOM, domParts);
