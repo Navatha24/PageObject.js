@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.2
+ * PageObject v0.3
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Tue Dec 27 04:39:27 EET 2011
+ * Date: Mon Jan 02 22:22:23 EET 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -148,12 +148,20 @@
     switch (true) {
 
     case typeof opts.template === 'string':
-      object.DOM.container.innerHTML = opts.templateFunction(opts.template, opts.context);
+      try {
+        object.DOM.container.innerHTML = opts.templateFunction(opts.template, opts.context);
+      } catch (e) {
+        throw "POE20: template error: " + e;
+      }
       break;
 
     // Integration with Jammit JST.
     case $.isFunction(opts.template):
-      object.DOM.container.innerHTML = opts.template(opts.context);
+      try {
+        object.DOM.container.innerHTML = opts.template(opts.context);
+      } catch (e) {
+        throw "POE20: template error: " + e;
+      }
       break;
 
     default:
