@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.3
+ * PageObject v0.5
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Mon Jan 02 22:22:23 EET 2012
+ * Date: Mon Jan 09 19:06:53 EET 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -149,7 +149,8 @@
 
     case typeof opts.template === 'string':
       try {
-        object.DOM.container.innerHTML = opts.templateFunction(opts.template, opts.context);
+        var rendered = opts.templateFunction(opts.template, opts.context);
+        $(object.DOM.container).html(rendered);
       } catch (e) {
         throw "POE20: template error: " + e;
       }
@@ -158,7 +159,8 @@
     // Integration with Jammit JST.
     case $.isFunction(opts.template):
       try {
-        object.DOM.container.innerHTML = opts.template(opts.context);
+        var rendered = opts.template(opts.context);
+        $(object.DOM.container).html(rendered);
       } catch (e) {
         throw "POE20: template error: " + e;
       }
