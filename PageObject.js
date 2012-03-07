@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.5
+ * PageObject v0.6
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Mon Jan 09 19:06:53 EET 2012
+ * Date: Wed Mar 07 04:54:38 EET 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -23,22 +23,32 @@
     hide: false
   };
 
+  // Use underscore microtemplating function as default if using underscore.
+  if (window._ && $.isFunction(window._.template)) {
+    defaultOptions.templateFunction = window._.template;
+  }
+
   // Use microtemplating function of John Resig as default if it's defined.
-  if ($.isFunction(window.tmpl)) {
+  else if ($.isFunction(window.tmpl)) {
     defaultOptions.templateFunction = window.tmpl;
   }
 
   // Extract jQuery DOM parts from a container using a map of selectors.
   function extract(container, selectors) {
-    var domParts = {}, name;
+    var domParts = {};
 
     $.each(selectors, function (name) {
+      var found;
 
       if (typeof name !== 'string' || !/^[A-z\.]+$/.test(name)) {
-        throw "POE10: incorrect selector `" + name + "`";
+        throw "POE10: incorrect selector name `" + name + "`";
       }
 
-      if ($.isArray(selectors[name]) && selectors[name].length === 2) {
+      if ($.isArray(selectors[name]) &&
+        selectors[name].length === 2 &&
+        $.type(selectors[name][0]) === 'string' &&
+        $.isFunction(selectors[name][1])) {
+
         domParts[name] = {};
         $(container).find(selectors[name][0]).each(function () {
           var id = selectors[name][1](this);
@@ -50,11 +60,18 @@
         domParts[name] = extract(container, selectors[name]);
       }
 
-      else {
-        domParts[name] = $(container).find(selectors[name]);
-        if (domParts[name].length === 0) {
+      else if ($.type(selectors[name]) === 'string') {
+        found = $(container).find(selectors[name]);
+        if (found.length === 0) {
           throw "POE11: DOM parts weren't found for selector `" + name + "`";
+        } else if (found.length > 1){
+          throw "POE12: multiple DOM parts found for selector `" + name + "`";
         }
+        domParts[name] = found[0];
+      }
+
+      else {
+        throw "POE13: invalid selector value";
       }
 
     });
@@ -62,10 +79,18 @@
     return domParts;
   }
 
+  // Returns true if it is a DOM element,
+  // http://stackoverflow.com/a/384380/133257
+  function isElement(o) {
+    return (
+      typeof window.HTMLElement === "object" ? o instanceof window.HTMLElement : // DOM2
+      typeof o === "object" && o.nodeType === 1 && typeof o.nodeName === "string"
+    );
+  }
 
   function turnToPageObject(object, options) {
     if (typeof object !== 'object') {
-      throw "POE01: invalid object ";
+      throw "POE01: invalid object";
     }
 
     if (!$.isPlainObject(options)) {
@@ -98,15 +123,6 @@
 
     // PREPARE THE CONTAINER.
 
-    // Returns true if it is a DOM element,
-    // http://stackoverflow.com/a/384380/133257
-    function isElement(o) {
-      return (
-        typeof window.HTMLElement === "object" ? o instanceof window.HTMLElement : // DOM2
-        typeof o === "object" && o.nodeType === 1 && typeof o.nodeName === "string"
-      );
-    }
-
     // All we need is a DOM element.
     if (isElement(opts.container)) {
       object.DOM.container = opts.container;
@@ -124,6 +140,9 @@
     // Or create it using a constructor function if specified.
     else if ($.isFunction(opts.container)) {
       object.DOM.container = opts.container();
+      if (!isElement(object.DOM.container)) {
+        throw "POE6: returned container should be a DOM element";
+      }
     }
 
     // Or create it if selector omitted.
@@ -162,12 +181,12 @@
         var rendered = opts.template(opts.context);
         $(object.DOM.container).html(rendered);
       } catch (e) {
-        throw "POE20: template error: " + e;
+        throw "POE21: template error: " + e;
       }
       break;
 
     default:
-      throw "POE06: template is invalid";
+      throw "POE07: template is invalid";
     }
 
 
