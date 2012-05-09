@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.6
+ * PageObject v0.7
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Wed Mar 07 04:54:38 EET 2012
+ * Date: Thu May 10 02:40:15 EEST 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -118,13 +118,19 @@
 
     // Namespace for jQuery DOM parts which are to be extracted
     // from the rendered template.
-    object.DOM = {};
+    if (!$.isPlainObject(object.DOM)) {
+      object.DOM = {};
+    }
 
 
     // PREPARE THE CONTAINER.
 
+    if ($.isPlainObject(object.DOM) && isElement(object.DOM.container)) {
+      // Just leave it alone untouched.
+    }
+
     // All we need is a DOM element.
-    if (isElement(opts.container)) {
+    else if (isElement(opts.container)) {
       object.DOM.container = opts.container;
     }
 
