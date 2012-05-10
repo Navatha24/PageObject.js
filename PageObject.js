@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.7
+ * PageObject v0.8
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Thu May 10 02:40:15 EEST 2012
+ * Date: Thu May 10 12:49:42 EEST 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -107,7 +107,7 @@
     }
 
     // Template option is mandatory.
-    if (!opts.template) {
+    if (opts.template === undefined) {
       throw "POE04: template option not set";
     }
 
@@ -173,11 +173,14 @@
     switch (true) {
 
     case typeof opts.template === 'string':
+      if (!opts.template.length) {
+        throw "POE20: template string is empty";
+      }
       try {
         var rendered = opts.templateFunction(opts.template, opts.context);
         $(object.DOM.container).html(rendered);
       } catch (e) {
-        throw "POE20: template error: " + e;
+        throw "POE21: template error: " + e;
       }
       break;
 
@@ -187,7 +190,7 @@
         var rendered = opts.template(opts.context);
         $(object.DOM.container).html(rendered);
       } catch (e) {
-        throw "POE21: template error: " + e;
+        throw "POE22: template error: " + e;
       }
       break;
 
