@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.8
+ * PageObject v0.9
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Thu May 10 12:49:42 EEST 2012
+ * Date: Mon May 21 15:51:08 EEST 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -38,36 +38,46 @@
     var domParts = {};
 
     $.each(selectors, function (name) {
-      var found;
+      var found, selector, findMultiple = false;
 
       if (typeof name !== 'string' || !/^[A-z\.]+$/.test(name)) {
         throw "POE10: incorrect selector name `" + name + "`";
       }
 
-      if ($.isArray(selectors[name]) &&
-        selectors[name].length === 2 &&
-        $.type(selectors[name][0]) === 'string' &&
-        $.isFunction(selectors[name][1])) {
+      selector = selectors[name];
+
+      if ($.isArray(selector) &&
+        selector.length === 2 &&
+        $.type(selector[0]) === 'string' &&
+        $.isFunction(selector[1])) {
 
         domParts[name] = {};
-        $(container).find(selectors[name][0]).each(function () {
-          var id = selectors[name][1](this);
+        $(container).find(selector[0]).each(function () {
+          var id = selector[1](this);
           domParts[name][id] = this;
         });
       }
 
-      else if ($.isPlainObject(selectors[name])) {
-        domParts[name] = extract(container, selectors[name]);
+      else if ($.isPlainObject(selector)) {
+        domParts[name] = extract(container, selector);
       }
 
-      else if ($.type(selectors[name]) === 'string') {
-        found = $(container).find(selectors[name]);
+      else if ($.type(selector) === 'string') {
+        findMultiple = selector.indexOf('[]') === 0;
+        if (findMultiple) selector = selector.replace('[]', '');
+        found = $(container).find(selector);
         if (found.length === 0) {
           throw "POE11: DOM parts weren't found for selector `" + name + "`";
-        } else if (found.length > 1){
-          throw "POE12: multiple DOM parts found for selector `" + name + "`";
+        } else if (found.length > 1) {
+          if (findMultiple) {
+            found = Array.prototype.slice.call(found);
+          } else {
+            throw "POE12: multiple DOM parts found for selector `" + name + "`";
+          }
+        } else {
+          found = found[0];
         }
-        domParts[name] = found[0];
+        domParts[name] = found;
       }
 
       else {
