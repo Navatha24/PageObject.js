@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.9
+ * PageObject v0.10
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Mon May 21 15:51:08 EEST 2012
+ * Date: Tue May 22 14:06:55 EEST 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -53,8 +53,11 @@
 
         domParts[name] = {};
         $(container).find(selector[0]).each(function () {
-          var id = selector[1](this);
-          domParts[name][id] = this;
+          var id = selector[1].call(this, this);
+          if (id) {
+            if (domParts[name][id]) throw "POE11: duplicate identifier `" + id + "` in DOM part namespace `"+ name +"`";
+            domParts[name][id] = this;
+          }
         });
       }
 
@@ -67,12 +70,12 @@
         if (findMultiple) selector = selector.replace('[]', '');
         found = $(container).find(selector);
         if (found.length === 0) {
-          throw "POE11: DOM parts weren't found for selector `" + name + "`";
+          throw "POE12: DOM parts weren't found for selector `" + name + "`";
         } else if (found.length > 1) {
           if (findMultiple) {
             found = Array.prototype.slice.call(found);
           } else {
-            throw "POE12: multiple DOM parts found for selector `" + name + "`";
+            throw "POE13: multiple DOM parts found for selector `" + name + "`";
           }
         } else {
           found = found[0];
@@ -81,7 +84,7 @@
       }
 
       else {
-        throw "POE13: invalid selector value";
+        throw "POE14: invalid selector value";
       }
 
     });
