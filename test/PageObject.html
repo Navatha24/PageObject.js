@@ -13,21 +13,56 @@
 
     test("turnToPageObject", function () {
 
+
       raises(function () {
         $.turnToPageObject();
-      }, /^POE01/, "Shouting if nothing in.");
+      }, /^POE01/, "Shouting if first argument is undefined.");
 
       raises(function () {
-        $.turnToPageObject(0);
-      }, /^POE01/, "Shouting if one argument in.");
+        $.turnToPageObject("string");
+      }, /^POE01/, "Shouting if first argument is string.");
 
       raises(function () {
-        $.turnToPageObject(0, 1);
-      }, /^POE02/, "Working with two arguments only.");
+        $.turnToPageObject(1);
+      }, /^POE01/, "Shouting if first argument is number.");
 
       raises(function () {
-        $.turnToPageObject(0, 1, 2);
-      }, /^POE01/, "Shouting if more than two arguments in.");
+        $.turnToPageObject(true);
+      }, /^POE01/, "Shouting if first argument is boolean.");
+
+      raises(function () {
+        $.turnToPageObject(null);
+      }, /^POE01/, "Shouting if first argument is null.");
+
+      raises(function () {
+        $.turnToPageObject(function () {});
+      }, /^POE01/, "Shouting if first argument is function.");
+
+
+      raises(function () {
+        $.turnToPageObject({});
+      }, /^POE02/, "Shouting if second argument is undefined.");
+
+      raises(function () {
+        $.turnToPageObject({}, "string");
+      }, /^POE02/, "Shouting if second argument is string.");
+
+      raises(function () {
+        $.turnToPageObject({}, 1);
+      }, /^POE02/, "Shouting if second argument is number.");
+
+      raises(function () {
+        $.turnToPageObject({}, true);
+      }, /^POE02/, "Shouting if second argument is boolean.");
+
+      raises(function () {
+        $.turnToPageObject({}, null);
+      }, /^POE02/, "Shouting if second argument is null.");
+
+      raises(function () {
+        $.turnToPageObject({}, function () {});
+      }, /^POE02/, "Shouting if second argument is null.");
+
 
     });
 

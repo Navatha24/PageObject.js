@@ -102,16 +102,13 @@
   }
 
   function turnToPageObject(object, options) {
-    if (arguments.length != 2) {
-      throw "POE01: turnToPageObject should be called with 2 arguments (object and options)";
-    }
 
-    if (typeof object !== 'object') {
-      throw "POE02: invalid object";
+    if (object === null || typeof object !== 'object') {
+      throw "POE01: invalid object";
     }
 
     if (!$.isPlainObject(options)) {
-      throw "POE03: options not specified";
+      throw "POE02: options not specified";
     }
 
     var opts = $.extend(true, {}, defaultOptions, options),
@@ -120,12 +117,12 @@
 
     // Cannot proceed without template engine.
     if (!$.isFunction(opts.templateFunction)) {
-      throw "POE04: templateFunction not configured";
+      throw "POE03: templateFunction not configured";
     }
 
     // Template option is mandatory.
     if (opts.template === undefined) {
-      throw "POE05: template option not set";
+      throw "POE04: template option not set";
     }
 
     // Template context should be a plain object.
@@ -155,7 +152,7 @@
     else if (typeof opts.container === 'string') {
       $container = $(opts.container);
       if (!$container.size()) {
-        throw "POE06: container not found";
+        throw "POE05: container not found";
       }
       object.DOM.container = $container[0];
     }
@@ -164,7 +161,7 @@
     else if ($.isFunction(opts.container)) {
       object.DOM.container = opts.container();
       if (!isElement(object.DOM.container)) {
-        throw "POE7: returned container should be a DOM element";
+        throw "POE06: returned container should be a DOM element";
       }
     }
 
