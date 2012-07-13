@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.10
+ * PageObject v0.11
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Tue May 22 14:06:55 EEST 2012
+ * Date: Fri Jul 13 01:47:15 EEST 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -17,7 +17,7 @@
     containerClass: undefined,
     domElement: 'div',
     templateFunction: undefined,
-    template: undefined,
+    template: '',
     context: {},
     selectors: {},
     hide: false
@@ -119,11 +119,6 @@
       throw "POE03: templateFunction not configured";
     }
 
-    // Template option is mandatory.
-    if (opts.template === undefined) {
-      throw "POE04: template option not set";
-    }
-
     // Template context should be a plain object.
     if (!$.isPlainObject(opts.context)) {
       opts.context = {};
@@ -151,7 +146,7 @@
     else if (typeof opts.container === 'string') {
       $container = $(opts.container);
       if (!$container.size()) {
-        throw "POE05: container not found";
+        throw "POE04: container not found";
       }
       object.DOM.container = $container[0];
     }
@@ -160,7 +155,7 @@
     else if ($.isFunction(opts.container)) {
       object.DOM.container = opts.container();
       if (!isElement(object.DOM.container)) {
-        throw "POE6: returned container should be a DOM element";
+        throw "POE05: returned container should be a DOM element";
       }
     }
 
@@ -184,31 +179,27 @@
 
     // Template should be either a string or a function.
     switch (true) {
+      case typeof opts.template === 'string':
+        try {
+          var rendered = opts.templateFunction(opts.template, opts.context);
+          $(object.DOM.container).html(rendered);
+        } catch (e) {
+          throw "POE20: template error: " + e;
+        }
+        break;
 
-    case typeof opts.template === 'string':
-      if (!opts.template.length) {
-        throw "POE20: template string is empty";
-      }
-      try {
-        var rendered = opts.templateFunction(opts.template, opts.context);
-        $(object.DOM.container).html(rendered);
-      } catch (e) {
-        throw "POE21: template error: " + e;
-      }
-      break;
+      // Integration with Jammit JST.
+      case $.isFunction(opts.template):
+        try {
+          var rendered = opts.template(opts.context);
+          $(object.DOM.container).html(rendered);
+        } catch (e) {
+          throw "POE21: template error: " + e;
+        }
+        break;
 
-    // Integration with Jammit JST.
-    case $.isFunction(opts.template):
-      try {
-        var rendered = opts.template(opts.context);
-        $(object.DOM.container).html(rendered);
-      } catch (e) {
-        throw "POE22: template error: " + e;
-      }
-      break;
-
-    default:
-      throw "POE07: template is invalid";
+      default:
+        throw "POE06: template is invalid";
     }
 
 
