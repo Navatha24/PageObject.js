@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script src="jquery-1.7.2.js"></script>
+  <link rel="stylesheet" href="qunit.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="qunit.js"></script>
+  <script type="text/javascript" src="../PageObject.js"></script>
+
+  <script>
+  function unready() { equal( true, true, "failing test" ); }
+
+  $(document).ready(function() {
+
+    test("turnToPageObject", function () {
+
+
+      raises(function () {
+        $.turnToPageObject();
+      }, /^POE01/, "Shouting if first argument is undefined.");
+
+      raises(function () {
+        $.turnToPageObject("string");
+      }, /^POE01/, "Shouting if first argument is string.");
+
+      raises(function () {
+        $.turnToPageObject(1);
+      }, /^POE01/, "Shouting if first argument is number.");
+
+      raises(function () {
+        $.turnToPageObject(true);
+      }, /^POE01/, "Shouting if first argument is boolean.");
+
+      raises(function () {
+        $.turnToPageObject(null);
+      }, /^POE01/, "Shouting if first argument is null.");
+
+      raises(function () {
+        $.turnToPageObject(function () {});
+      }, /^POE01/, "Shouting if first argument is function.");
+
+
+      raises(function () {
+        $.turnToPageObject({});
+      }, /^POE02/, "Shouting if second argument is undefined.");
+
+      raises(function () {
+        $.turnToPageObject({}, "string");
+      }, /^POE02/, "Shouting if second argument is string.");
+
+      raises(function () {
+        $.turnToPageObject({}, 1);
+      }, /^POE02/, "Shouting if second argument is number.");
+
+      raises(function () {
+        $.turnToPageObject({}, true);
+      }, /^POE02/, "Shouting if second argument is boolean.");
+
+      raises(function () {
+        $.turnToPageObject({}, null);
+      }, /^POE02/, "Shouting if second argument is null.");
+
+      raises(function () {
+        $.turnToPageObject({}, function () {});
+      }, /^POE02/, "Shouting if second argument is null.");
+
+
+    });
+
+  });
+  </script>
+
+</head>
+<body>
+  <h1 id="qunit-header">PageObject.js</h1>
+  <h2 id="qunit-banner"></h2>
+  <div id="qunit-testrunner-toolbar"></div>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="qunit-fixture">
+
+    test markup, will be hidden
+
+  </div>
+</body>
+</html>

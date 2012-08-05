@@ -102,7 +102,8 @@
   }
 
   function turnToPageObject(object, options) {
-    if (typeof object !== 'object') {
+
+    if (object === null || typeof object !== 'object') {
       throw "POE01: invalid object";
     }
 
