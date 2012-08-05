@@ -2,12 +2,12 @@
 /*jslint browser: true, indent: 2, unparam: true, white: true, forin: true */
 
 /*
- * PageObject v0.11
+ * PageObject v0.12
  *
  * Copyright 2011, Mykhaylo Gavrylyuk
  * Licensed under the MIT license
  *
- * Date: Fri Jul 13 01:47:15 EEST 2012
+ * Date: Mon Jul 30 15:19:49 EEST 2012
  */
 (function (window, $, undefined) {
   "use strict";
@@ -106,9 +106,7 @@
       throw "POE01: invalid object";
     }
 
-    if (!$.isPlainObject(options)) {
-      throw "POE02: options not specified";
-    }
+    if (!$.isPlainObject(options)) options = {};
 
     var opts = $.extend(true, {}, defaultOptions, options),
       domParts,
@@ -116,7 +114,7 @@
 
     // Cannot proceed without template engine.
     if (!$.isFunction(opts.templateFunction)) {
-      throw "POE03: templateFunction not configured";
+      throw "POE02: templateFunction not configured";
     }
 
     // Template context should be a plain object.
@@ -146,7 +144,7 @@
     else if (typeof opts.container === 'string') {
       $container = $(opts.container);
       if (!$container.size()) {
-        throw "POE04: container not found";
+        throw "POE03: container not found";
       }
       object.DOM.container = $container[0];
     }
@@ -155,7 +153,7 @@
     else if ($.isFunction(opts.container)) {
       object.DOM.container = opts.container();
       if (!isElement(object.DOM.container)) {
-        throw "POE05: returned container should be a DOM element";
+        throw "POE04: returned container should be a DOM element";
       }
     }
 
@@ -199,7 +197,7 @@
         break;
 
       default:
-        throw "POE06: template is invalid";
+        throw "POE05: template is invalid";
     }
 
 
