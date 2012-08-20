@@ -1,68 +1,64 @@
 <html>
 <head>
+  <title>Calculator</title>
+  <script src="jquery.min.js"></script>
+  <script src="underscore.min.js"></script>
+  <script src="../PageObject.js"></script>
+  <script src="Calculator.js"></script>
 
-<title>Calculator</title>
+  <style>
+    body { margin: 50px; }
+    .calc { display: inline-block; width: 270px; border: 1px dotted orange; padding: 10px; }
+    .calc caption { margin-bottom: 15px; }
+    .calc td { padding: 2px; }
+    .calc input { font-family: Georgia; font-size: 15px; font-weight: bold; height: 50px; width: 50px;  }
+    .calc p { background-color: ghostwhite; height: 80px; font-size: 19px; font-weight: normal; padding: 10px; border: 1px solid silver; margin-bottom: 10px; }
+    .calc .calc-equals { height: 104px; }
+    .calc .calc-0 { width: 104px; }
+  </style>
 
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="tmpl.js"></script>
-<script src="../PageObject.js"></script>
-<script src="Calculator.js"></script>
+  <script type="text/html" id="tmplCalculator">
+    <table cellspacing="0" cellpadding="0">
+      <caption><%= caption %></caption>
+      <tr>
+        <td colspan="5"><p></p></td>
+      </tr>
+      <tr>
+        <td><input class="calc-1" type="button" value="1"/></td>
+        <td><input class="calc-2" type="button" value="2"/></td>
+        <td><input class="calc-3" type="button" value="3"/></td>
+        <td><input class="calc-divide" type="button" value="/"/></td>
+        <td><input class="calc-cancel" type="button" title="Cancel" value="C"/></td>
+      </tr>
+      <tr>
+        <td><input class="calc-4" type="button" value="4"/></td>
+        <td><input class="calc-5" type="button" value="5"/></td>
+        <td><input class="calc-6" type="button" value="6"/></td>
+        <td><input class="calc-multiply" type="button" value="*"/></td>
+        <td><input class="calc-undo" type="button" title="Undo" value="&larr;"/></td>
+      </tr>
+      <tr>
+        <td><input class="calc-7" type="button" value="7"/></td>
+        <td><input class="calc-8" type="button" value="8"/></td>
+        <td><input class="calc-9" type="button" value="9"/></td>
+        <td><input class="calc-minus" type="button" value="-"/></td>
+        <td rowspan="2"><input class="calc-equals" type="button" value="="/></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input class="calc-0" type="button" value="0"/></td>
+        <td><input class="calc-dot" type="button" value="."/></td>
+        <td><input class="calc-plus" type="button" value="+"/></td>
+      </tr>
+    </table>
+  </script>
 
-<style>
-  body { margin: 50px; }
-  .calc { display: inline-block; width: 270px; border: 1px dotted orange; padding: 10px; }
-  .calc caption { margin-bottom: 15px; }
-  .calc td { padding: 2px; }
-  .calc input { font-family: Georgia; font-size: 15px; font-weight: bold; height: 50px; width: 50px;  }
-  .calc p { background-color: ghostwhite; height: 80px; font-size: 19px; font-weight: normal; padding: 10px; border: 1px solid silver; margin-bottom: 10px; }
-  .calc .calc-equals { height: 104px; }
-  .calc .calc-0 { width: 104px; }
-</style>
-
-<script type="text/html" id="tmplCalculator">
-<table cellspacing="0" cellpadding="0">
-  <caption><%= caption %></caption>
-  <tr>
-    <td colspan="5"><p /></td>
-  </tr>
-  <tr>
-    <td><input class="calc-1" type="button" value="1"/></td>
-    <td><input class="calc-2" type="button" value="2"/></td>
-    <td><input class="calc-3" type="button" value="3"/></td>
-    <td><input class="calc-divide" type="button" value="/"/></td>
-    <td><input class="calc-cancel" type="button" title="Cancel" value="C"/></td>
-  </tr>
-  <tr>
-    <td><input class="calc-4" type="button" value="4"/></td>
-    <td><input class="calc-5" type="button" value="5"/></td>
-    <td><input class="calc-6" type="button" value="6"/></td>
-    <td><input class="calc-multiply" type="button" value="*"/></td>
-    <td><input class="calc-undo" type="button" title="Undo" value="&larr;"/></td>
-  </tr>
-  <tr>
-    <td><input class="calc-7" type="button" value="7"/></td>
-    <td><input class="calc-8" type="button" value="8"/></td>
-    <td><input class="calc-9" type="button" value="9"/></td>
-    <td><input class="calc-minus" type="button" value="-"/></td>
-    <td rowspan="2"><input class="calc-equals" type="button" value="="/></td>
-  </tr>
-  <tr>
-    <td colspan="2"><input class="calc-0" type="button" value="0"/></td>
-    <td><input class="calc-dot" type="button" value="."/></td>
-    <td><input class="calc-plus" type="button" value="+"/></td>
-  </tr>
-</table>
-</script>
-
-
-<script>
-var calculator; $(document).ready(function () {
-  calculator = new Calculator('div.calc');
-});
-</script>
+  <script>
+  $(document).ready(function () {
+    var calc = new Calculator();
+    $('body').append(calc.DOM.container);
+  });
+  </script>
 </head>
 
-<body>
-  <div class="calc" />
-</body>
+<body></body>
 </html>
