@@ -1,19 +1,23 @@
-(function ($, undefined) {
+(function ($) {
 
-  function Calculator(container) {
+  function Calculator() {
     var history = [],
-      calc = $.PageObject({
-        template: $('#tmplCalculator').html(),
-        containerClass: 'calc',
-        context: {
-          caption: "Demo Calculator",
-        },
-        selectors: {
-          buttons: [ ':button', Calculator.getButtonName ],
-          led: 'p'
-        }
-      }),
-      $led = $(calc.DOM.led);
+      calc = this,
+      $led;
+
+    $.turnToPageObject(calc, {
+      template: $('#tmplCalculator').html(),
+      containerClass: 'calc',
+      context: {
+        caption: "Demo Calculator",
+      },
+      selectors: {
+        buttons: [ ':button', Calculator.getButtonName ],
+        led: 'p'
+      }
+    });
+
+    $led = $(calc.DOM.led);
 
     function remember() {
       var current = $led.html();

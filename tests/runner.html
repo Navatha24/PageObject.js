@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>PageObject.js tests</title>
+  <link rel="stylesheet" href="resources/qunit-1.10.0.css">
+  <script>PAGE_OBJECT_JS_TEST_MODE = true;</script>
+</head>
+<body>
+  <div id="qunit" class="qunit"></div>
+  <div id="qunit-fixture">
+    <ul>
+      <li class="red" id="red"></li>
+      <li class="green" id="green"></li>
+      <li class="blue" id="blue"></li>
+    </ul>
+  </div>
+
+  <script type="text/javascript" src="resources/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" src="resources/qunit-1.10.0.js"></script>
+  <script type="text/javascript" src="resources/convenience.js"></script>
+  <script type="text/javascript" src="../PageObject.js"></script>
+
+  <script>
+    isElement = $.turnToPageObject.priv.isElement;
+    extractParts = $.turnToPageObject.priv.extractParts;
+    defaultOptions = $.turnToPageObject.priv.defaultOptions;
+  </script>
+
+  <script src="./tests.js"></script>
+</body>
+</html>
