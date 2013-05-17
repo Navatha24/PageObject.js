@@ -31,17 +31,104 @@
         <hr>
 
         <section id="main_content">
-          <p>PageObject is an abstraction meaning a part of a web page maintating its specific logic over its components (DOM elements and other page objects).</p>
+          <p><em>PageObject</em> is an abstraction meaning part of a web page maintating its specific logic over its components (DOM elements and other page objects when necessary).</p>
 
-<p>While creating rich web applications we used to single out page blocks. We refer to those blocks as objects when we need to repeat them somehow here or there. This is where the utility comes to hand.</p>
+<p>While creating rich web applications we usually single out page blocks. We refer to those blocks as objects when we need to repeat them somehow here or there. This is where the utility comes to hand. <strong>PageObject.js</strong> would help you if for such cases you used to render client-side templates and then revive their rendered results.</p>
 
-<p>PageObject would help you if for such cases you used to render client-side templates and then revive their rendered results.</p>
+<p><strong>PageObject.js</strong> is a jQuery utility and there are actually only two functions: </p>
 
-<p>Though template engine can be easily changed, PageObject out of the start works perfectly with both <a href="http://underscorejs.com/#template">underscore templates</a> and <a href="https://gist.github.com/1092301">microtemplating engine</a> by John Resig, determining without assistance if any of them is available.</p>
+<ul>
+<li>
+<code>$.turnToPageObject</code>and</li>
+<li>
+<code>$.turnToPageObject.configure</code>.</li>
+</ul><hr><h2>$.turnToPageObject( <em>[object]</em> target, <em>[object]</em> options )</h2>
 
-<p>Please refer to demos and source code to understand how things work. More documentation and examples will follow.</p>
+<p>The idea is that <code>target</code> should get <code>target.DOM</code> namespace filled with HTML DOM elements according to <code>options.selectors</code> taken from <code>options.template</code> rendered  with <code>options.context</code>.</p>
 
-<p>Noteworthy is that currently PageObject utilizes jQuery heavily but isn't a jQuery plugin. That's why it is referred to as <code>$.PageObject</code>. Although I'm feeling totally comfortable with jQuery, I guess PageObject might become aware of other popular frameworks as well. So you are welcome to contribute.</p>
+<div class="highlight"><pre><span class="kd">function</span> <span class="nx">LoginForm</span><span class="p">(</span><span class="nx">successCallback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">lf</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="nx">$</span><span class="p">.</span><span class="nx">turnToPageObject</span><span class="p">(</span><span class="nx">lf</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">template</span><span class="o">:</span> <span class="s1">'&lt;form&gt;'</span><span class="o">+</span>
+              <span class="s1">'&lt;h1&gt;&lt;%= caption %&gt;&lt;/h1&gt;'</span><span class="o">+</span>
+              <span class="s1">'&lt;input type="text" name="email" /&gt;'</span><span class="o">+</span>
+              <span class="s1">'&lt;input type="password" name="password" /&gt;'</span><span class="o">+</span>
+              <span class="s1">'&lt;input type="submit" name="submit" /&gt;'</span>
+              <span class="s1">'&lt;/form'</span><span class="p">,</span>
+    <span class="nx">context</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">caption</span><span class="o">:</span> <span class="nx">I18n</span><span class="p">.</span><span class="nx">t</span><span class="p">(</span><span class="s2">"Please enter your credentials below"</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nx">selectors</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">form</span><span class="o">:</span> <span class="s1">'form'</span><span class="p">,</span>
+      <span class="nx">email</span><span class="o">:</span> <span class="s1">'input[name=email]'</span><span class="p">,</span>
+      <span class="nx">password</span><span class="o">:</span> <span class="s1">':password'</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+
+  <span class="nx">$</span><span class="p">(</span><span class="nx">lf</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">form</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">email</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">lf</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">email</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span>
+      <span class="nx">password</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">lf</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">password</span><span class="p">).</span><span class="nx">val</span><span class="p">(),</span>
+      <span class="nx">ok</span> <span class="o">=</span> <span class="nx">authenticate</span><span class="p">(</span><span class="nx">email</span><span class="p">,</span> <span class="nx">password</span><span class="p">);</span>  
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ok</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="s2">"No way, buddy!"</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">success</span><span class="p">();</span>
+      <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">loginForm</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LoginForm</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// render some other view</span>
+<span class="p">});</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="s1">'body'</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">loginForm</span><span class="p">.</span><span class="nx">DOM</span><span class="p">.</span><span class="nx">container</span><span class="p">);</span>
+</pre></div>
+
+<h3>$.turnToPageObject options</h3>
+
+<h4>Container related</h4>
+
+<p>If you ommit <code>container</code> <em>DOM element</em> it will be created for you from <code>containerElement</code> which is <strong>DIV</strong> by default.</p>
+
+<p>If you provide <code>containerClass</code> <em>string</em> option, your <code>target.DOM.container</code> will get that class.</p>
+
+<p>If you set <code>hide</code> to <code>true</code> option, <code>target.DOM.container</code> will be hidden. This has proved to be useful.</p>
+
+<h4>Template related</h4>
+
+<p>if you provide <code>template</code> option, the rendered template will be placed inside <code>target.DOM.container</code>.</p>
+
+<p>If you omit <code>context</code> option, template will be rendered with empty context <code>{}</code>.</p>
+
+<p><code>template</code> can be either a function or a string.</p>
+
+<ul>
+<li>Function <code>template</code> takes single argument, a <code>context</code> object, and returns string. This is made for integration with <a href="http://documentcloud.github.io/jammit/#jst">Jammit JST</a>.</li>
+<li>String templates are rendered with <code>templateEngine</code> which takes two arguments, <code>template</code> string and <code>context</code> object. <code>templateEngine</code> function also returns string.</li>
+</ul><p><code>templateEngine</code> is being automatically configured to use <code>_.template</code> if <a href="http://documentcloud.github.io/underscore">Underscore</a> is present.</p>
+
+<p>If there's no <em>Underscore</em> in your project, you'll need to configure <code>templateEngine</code>.</p>
+
+<p>This is how to set defaults:</p>
+
+<div class="highlight"><pre><span class="nx">$</span><span class="p">.</span><span class="nx">turnToPageObject</span><span class="p">.</span><span class="nx">configure</span><span class="p">({</span>
+  <span class="nx">templateEngine</span><span class="o">:</span> <span class="nb">window</span><span class="p">.</span><span class="nx">tmpl</span><span class="p">,</span> <span class="c1">// http://ejohn.org/blog/javascript-micro-templating</span>
+  <span class="nx">containerElement</span><span class="o">:</span> <span class="s1">'strong'</span>
+<span class="p">});</span>
+</pre></div>
+
+<h4>Selectors</h4>
+
+<p>If you provide <code>selectors</code> <em>object</em> option, HTML DOM elements will be found within <code>target.DOM.container</code> and placed in <code>target.DOM</code> under corresponding keys. If <code>template</code> option was specified, <code>selectors</code> will be searching after it is rendered into the container.</p>
+
+<p>If a selector fails to find any element it will throw an exception. If it finds multiple elements it will shout too. If you do really need to find multiple selectors and store them in array under the corresponding key, just prepend <code>[]</code> (square brackets) to a selector, e.g. '[] ul &gt; li'.</p>
+
+<p>If you need to collect some elements into an object having their keys determined from HTML DOM elements found, like in the <a href="http://j.mp/Z1roQS">Calculator</a> demo, write selector as a two elements array <code>[ realSelector, functionToDetermineElementsKey ]</code>.</p>
+
+<p>Namespaces in <code>selectors</code> result in same namespaces in <code>target.DOM</code>.</p>
+
+<hr><p>Please check out <a href="http://j.mp/Z1roQS">the demo</a>, the source code and tests to learn how things work.</p>
         </section>
 
         <footer>
