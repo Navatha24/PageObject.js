@@ -9,18 +9,43 @@ $(document).ready(function() {
   module("$.isElement");
 
   test("should tell whether provided argument is an HTML DOM element", function () {
-    ok( !$.isElement(),          "false if nothing");
-    ok( !$.isElement(undefined), "false if undefined");
-    ok( !$.isElement(null),      "false if null");
-    ok( !$.isElement("str"),     "false if string");
-    ok( !$.isElement(/re/),      "false if regexp");
-    ok( !$.isElement(12345),     "false if number");
-    ok( !$.isElement(12.45),     "false if float number");
-    ok( !$.isElement(Infinity),  "false if Infinity");
-    ok( !$.isElement([]),        "false if array");
-    ok( !$.isElement({}),        "false if object");
-    ok( !$.isElement($.noop),    "false if function");
-    ok( $('body')[0],   "true if HTML DOM element");
+    ok( !$.isElement(),            "false if nothing");
+    ok( !$.isElement(undefined),   "false if undefined");
+    ok( !$.isElement(null),        "false if null");
+    ok( !$.isElement("str"),       "false if string");
+    ok( !$.isElement(/re/),        "false if regexp");
+    ok( !$.isElement(12345),       "false if number");
+    ok( !$.isElement(12.45),       "false if float number");
+    ok( !$.isElement(Infinity),    "false if Infinity");
+    ok( !$.isElement([]),          "false if array");
+    ok( !$.isElement({}),          "false if object");
+    ok( !$.isElement($.noop),      "false if function");
+    ok( $.isElement($('body')[0]), "true if HTML DOM element");
+  });
+
+
+  module("$.isPageObject");
+
+  test("should tell whether provided argument is a PageObject", function () {
+    var el = $('body')[0];
+
+    ok( !$.isPageObject(),           "false if nothing");
+    ok( !$.isPageObject(undefined),  "false if undefined");
+    ok( !$.isPageObject(null),       "false if null");
+    ok( !$.isPageObject("str"),      "false if string");
+    ok( !$.isPageObject(/re/),       "false if regexp");
+    ok( !$.isPageObject(12345),      "false if number");
+    ok( !$.isPageObject(12.45),      "false if float number");
+    ok( !$.isPageObject(Infinity),   "false if Infinity");
+    ok( !$.isPageObject([]),         "false if array");
+    ok( !$.isPageObject($.noop),     "false if function");
+    ok( !$.isPageObject(el),         "false if HTML DOM element");
+
+    ok( !$.isPageObject({}),         "false if empty object");
+    ok( !$.isPageObject({ DOM: {}}), "false if object has DOM namespace, but it is empty");
+    ok( !$.isPageObject({ DOM: { some: el }}),       "false if object has DOM namespace, and it is not empty, but there is no container property");
+    ok( !$.isPageObject({ DOM: { container: 123 }}), "false if object has DOM namespace, and it is not empty, and there is container property, but it is not a DOM element");
+    ok(  $.isPageObject({ DOM: { container: el }}),  "true if object has DOM namespace, and it is not empty, and there is container property, and it is not a DOM element");
   });
 
 

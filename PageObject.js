@@ -122,6 +122,10 @@
     );
   };
 
+  $.isPageObject = function (po) {
+    return po && po.DOM && $.isPlainObject(po.DOM) && $.isElement(po.DOM.container);
+  }
+
   $.turnToPageObject = function (target, options) {
     var opts, rendered, domParts;
 
