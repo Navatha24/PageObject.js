@@ -262,6 +262,14 @@ $(document).ready(function() {
   });
 
 
+  // ESTABLISH REFERENCE
+  test("a container DOM element of a new page object should always have a reference to page object via $.data", function () {
+    var a = {};
+    $.turnToPageObject(a, {});
+    ok( $(a.DOM.container).data('pageObject') === a);
+  });
+
+
   // RENDER TEMPLATE
   test("template is string", function () {
     var body = $('body')[0], a = {};

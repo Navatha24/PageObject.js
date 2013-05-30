@@ -173,6 +173,11 @@
     }
 
 
+    //   ESTABLISH REFERENCE
+    //   -------------------
+
+    $(target.DOM.container).data('pageObject', target);
+
 
     //   RENDER TEMPLATE
     //   ---------------
