@@ -1,0 +1,9 @@
+v0.15
+  priv.isElement => $.isElement
+  string errors => new Error()
+  priv.extractParts => $.extractParts
+  $.isPageObject(po)
+  $(po.DOM.container).data('pageObject', po)
+
+v0.14
+  One day…

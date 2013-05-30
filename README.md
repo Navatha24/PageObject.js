@@ -2,7 +2,7 @@ _PageObject_ is an abstraction meaning part of a web page maintating its specifi
 
 While creating rich web applications we usually single out page blocks. We refer to those blocks as objects when we need to repeat them somehow here or there. This is where the utility comes to hand. **PageObject.js** would help you if for such cases you used to render client-side templates and then revive their rendered results.
 
-**PageObject.js** is a jQuery utility and there are actually only two functions:
+**PageObject.js** is a jQuery utility and there are (as of v0.14) actually only two functions:
 
 - `$.turnToPageObject`and
 - `$.turnToPageObject.configure`.
