@@ -6,20 +6,20 @@ function testTemplate(context) {
 
 $(document).ready(function() {
 
-  module("priv.isElement");
+  module("$.isElement");
 
   test("should tell whether provided argument is an HTML DOM element", function () {
-    ok( !isElement(),          "false if nothing");
-    ok( !isElement(undefined), "false if undefined");
-    ok( !isElement(null),      "false if null");
-    ok( !isElement("str"),     "false if string");
-    ok( !isElement(/re/),      "false if regexp");
-    ok( !isElement(12345),     "false if number");
-    ok( !isElement(12.45),     "false if float number");
-    ok( !isElement(Infinity),  "false if Infinity");
-    ok( !isElement([]),        "false if array");
-    ok( !isElement({}),        "false if object");
-    ok( !isElement($.noop),    "false if function");
+    ok( !$.isElement(),          "false if nothing");
+    ok( !$.isElement(undefined), "false if undefined");
+    ok( !$.isElement(null),      "false if null");
+    ok( !$.isElement("str"),     "false if string");
+    ok( !$.isElement(/re/),      "false if regexp");
+    ok( !$.isElement(12345),     "false if number");
+    ok( !$.isElement(12.45),     "false if float number");
+    ok( !$.isElement(Infinity),  "false if Infinity");
+    ok( !$.isElement([]),        "false if array");
+    ok( !$.isElement({}),        "false if object");
+    ok( !$.isElement($.noop),    "false if function");
     ok( $('body')[0],   "true if HTML DOM element");
   });
 
@@ -87,7 +87,7 @@ $(document).ready(function() {
     DOM = extractParts(body, { 'abc': 'div#qunit' });
     ok( $.isPlainObject(DOM), 'the result should be a plain object');
     ok( objectSize(DOM) === 1, 'and it should have exactly same number of keys as there were in selectors object');
-    ok( isElement(DOM.abc), "and it should have valid key as selector's name in it");
+    ok( $.isElement(DOM.abc), "and it should have valid key as selector's name in it");
     ok( DOM.abc == document.getElementById('qunit'), 'and extracted element by selectors should be relevant');
 
     throws(function(){  DOM = extractParts(body, { abc: 'small' }); }, /^POE14/, "should fail if no elements found for selector");
@@ -109,7 +109,7 @@ $(document).ready(function() {
     ok( objectSize(DOM) === 1 );
     ok( $.isPlainObject(DOM.abc), "should return object corresponding to the object selector filled with the found elements corresponding to its selectors" );
     ok( objectSize(DOM.abc) === 2 );
-    ok( isElement(DOM.abc.def) && $.isArray(DOM.abc.ghi) );
+    ok( $.isElement(DOM.abc.def) && $.isArray(DOM.abc.ghi) );
     ok( DOM.abc.def == document.getElementById('qunit') && DOM.abc.ghi.length == 2 );
   });
 

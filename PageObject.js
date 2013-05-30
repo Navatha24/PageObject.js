@@ -35,14 +35,13 @@
   priv.extractParts = function (sourceContainer, selectors) {
     var domParts = {};
 
-    if (!priv.isElement(sourceContainer)) {
-      throw "POE10: arguments should be 1st — HTML DOM container and 2nd — selectors map";
+    if (!$.isElement(sourceContainer)) {
+      throw "POE10: arguments should be: 1st — HTML DOM container, 2nd — selectors map";
     }
 
     if (!$.isPlainObject(selectors)) {
       selectors = {};
     }
-
 
     $.each(selectors, function (name, selector) {
       var found,
@@ -103,7 +102,7 @@
   };
 
   // http://stackoverflow.com/a/384380/133257
-  priv.isElement = function (o) {
+  $.isElement = function (o) {
     return  (
       typeof window.HTMLElement === "object" ? o instanceof window.HTMLElement : // DOM2
       typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string"
@@ -140,7 +139,7 @@
     //   -----------------
 
     if (opts.container !== undefined) {
-      if (!priv.isElement(opts.container)) {
+      if (!$.isElement(opts.container)) {
         throw "POE02: container is invalid!";
       }
       target.DOM.container = opts.container;
