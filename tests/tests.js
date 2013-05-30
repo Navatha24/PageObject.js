@@ -74,8 +74,8 @@ $(document).ready(function() {
   test("selector names in selectors object should be alpha only", function () {
     var body = $('body')[0], validSelector = 'div#qunit';
 
-    throws(function(){  extractParts(body, { '123': validSelector }); }, /^POE12/, "fails receiving numeric selector name");
-    throws(function(){  extractParts(body, { '!@#': validSelector }); }, /^POE12/, "fails receiving selector name with symbols");
+    throws(function(){  extractParts(body, { '123': validSelector }); }, /^POE11/, "fails receiving numeric selector name");
+    throws(function(){  extractParts(body, { '!@#': validSelector }); }, /^POE11/, "fails receiving selector name with symbols");
 
     extractParts(body, { 'abc': validSelector });
     ok( true, 'passes when selector names are alpha only');
@@ -90,15 +90,15 @@ $(document).ready(function() {
     ok( $.isElement(DOM.abc), "and it should have valid key as selector's name in it");
     ok( DOM.abc == document.getElementById('qunit'), 'and extracted element by selectors should be relevant');
 
-    throws(function(){  DOM = extractParts(body, { abc: 'small' }); }, /^POE14/, "should fail if no elements found for selector");
-    throws(function(){  DOM = extractParts(body, { abc: 'div' }); }, /^POE15/, "should fail if more than one element was found for selector");
+    throws(function(){  DOM = extractParts(body, { abc: 'small' }); }, /^POE13/, "should fail if no elements found for selector");
+    throws(function(){  DOM = extractParts(body, { abc: 'div' }); }, /^POE14/, "should fail if more than one element was found for selector");
 
     DOM = extractParts(body, { divs: '[] > div' });
     ok( true, "shouldn't fail if selector starts with [] and multiple elements found for the selector");
     ok( $.isArray(DOM.divs), "and the result should be an array");
     ok( DOM.divs.length == 2 && DOM.divs[0] == document.getElementById('qunit') && DOM.divs[1] == document.getElementById('qunit-fixture'), "and that array should consist of exactly same number of elements as there are in the DOM within the container");
 
-    throws(function(){  extractParts(body, { divs: '[] small' }); }, /^POE14/, "should fail if selector starts with [] and no elements found for the selector");
+    throws(function(){  extractParts(body, { divs: '[] small' }); }, /^POE13/, "should fail if selector starts with [] and no elements found for the selector");
   });
 
   test("selector is object of other selectors", function () {
@@ -125,29 +125,34 @@ $(document).ready(function() {
         DOM.abc.green == document.getElementById('green') &&
         DOM.abc.blue == document.getElementById('blue'), "should extract correct elements assign them to corresponding properties");
 
-    throws(function(){  DOM = extractParts(body, { abc: [] }); }, /^POE16/, "should fail if array is empty");
-    throws(function(){  DOM = extractParts(body, { abc: [ 'div' ] }); }, /^POE16/, "should fail if array has only 1 elem");
-    throws(function(){  DOM = extractParts(body, { abc: [ 'div', $.noop, 3] }); }, /^POE16/, "should fail if array has only more than 2 elems");
-    throws(function(){  DOM = extractParts(body, { abc: [ 1, $.noop ] }); }, /^POE16/, "should fail if 1st array elem is not a string selector");
-    throws(function(){  DOM = extractParts(body, { abc: [ 'div', 1 ] }); }, /^POE16/, "should fail if 2nd array elem is not a function");
+    throws(function(){  DOM = extractParts(body, { abc: [] }); },                  /^POE15/, "should fail if array is empty");
+    throws(function(){  DOM = extractParts(body, { abc: [ 'div' ] }); },           /^POE15/, "should fail if array has only 1 elem");
+    throws(function(){  DOM = extractParts(body, { abc: [ 'div', $.noop, 3] }); }, /^POE15/, "should fail if array has only more than 2 elems");
+    throws(function(){  DOM = extractParts(body, { abc: [ 1, $.noop ] }); },       /^POE15/, "should fail if 1st array elem is not a string selector");
+    throws(function(){  DOM = extractParts(body, { abc: [ 'div', 1 ] }); },        /^POE15/, "should fail if 2nd array elem is not a function");
 
     DOM = extractParts(body, { abc: [ 'ul > li', $.noop ] });
     ok( objectSize(DOM.abc) === 0, "should not process on which function returns falsy name" );
+
+    var dup = $('<li></li>').insertAfter('#blue').attr('id', 'blue');
+    throws(function(){
+      DOM = extractParts(body, { abc: [ 'ul > li', function () { return $(this).attr('id'); } ] });
+    }, /^POE12/, "should fail if there's a second element found for a single name");
   });
 
   test("selector is anything else — should always fail", function () {
     var body = $('body')[0], DOM;
 
-    throws(function(){  extractParts(body, { abc: null }); },      /^POE16/, "null");
-    throws(function(){  extractParts(body, { abc: undefined }); }, /^POE16/, "undefined");
-    throws(function(){  extractParts(body, { abc: true }); },      /^POE16/, "true");
-    throws(function(){  extractParts(body, { abc: false }); },     /^POE16/, "false");
-    throws(function(){  extractParts(body, { abc: 12345 }); },     /^POE16/, "number");
-    throws(function(){  extractParts(body, { abc: 12.45 }); },     /^POE16/, "float number");
-    throws(function(){  extractParts(body, { abc: 0 }); },         /^POE16/, "zero");
-    throws(function(){  extractParts(body, { abc: Infinity }); },  /^POE16/, "Infinity");
-    throws(function(){  extractParts(body, { abc: /re/ }); },      /^POE16/, "regexp");
-    throws(function(){  extractParts(body, { abc: $.noop }); },    /^POE16/, "function");
+    throws(function(){  extractParts(body, { abc: null }); },      /^POE15/, "null");
+    throws(function(){  extractParts(body, { abc: undefined }); }, /^POE15/, "undefined");
+    throws(function(){  extractParts(body, { abc: true }); },      /^POE15/, "true");
+    throws(function(){  extractParts(body, { abc: false }); },     /^POE15/, "false");
+    throws(function(){  extractParts(body, { abc: 12345 }); },     /^POE15/, "number");
+    throws(function(){  extractParts(body, { abc: 12.45 }); },     /^POE15/, "float number");
+    throws(function(){  extractParts(body, { abc: 0 }); },         /^POE15/, "zero");
+    throws(function(){  extractParts(body, { abc: Infinity }); },  /^POE15/, "Infinity");
+    throws(function(){  extractParts(body, { abc: /re/ }); },      /^POE15/, "regexp");
+    throws(function(){  extractParts(body, { abc: $.noop }); },    /^POE15/, "function");
   });
 
 
@@ -315,14 +320,14 @@ $(document).ready(function() {
       $.turnToPageObject({}, {
         template: function () { throw "SHOUT1"; }
       });
-    }, /^POE20/, "it raises error when function template is used");
+    }, /^POE05/, "it raises error when function template is used");
 
     throws(function(){
       $.turnToPageObject({}, {
         template: '',
         templateEngine: function () { throw "SHOUT2"; }
       });
-    }, /^POE20/, "it also raises error when templateEngine is used");
+    }, /^POE05/, "it also raises error when templateEngine is used");
   });
 
 

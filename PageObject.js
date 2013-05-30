@@ -13,7 +13,20 @@
 (function (window, $) {
   "use strict";
 
-  var priv = {};
+  var priv = {}, POE;
+
+  function PageObjectError(code, message) {
+    this.name = "PageObjectError";
+    this.code = code < 10 ? "0"+code : code;
+    this.message = message;
+  }
+  PageObjectError.prototype = new Error();
+  PageObjectError.prototype.constructor = new PageObjectError;
+  PageObjectError.prototype.toString = function () {
+    return "POE" + this.code + ": " + this.message;
+  }
+
+  POE = PageObjectError;
 
   priv.defaultOptions = {
     container: undefined,
@@ -36,7 +49,7 @@
     var domParts = {};
 
     if (!$.isElement(sourceContainer)) {
-      throw "POE10: arguments should be: 1st — HTML DOM container, 2nd — selectors map";
+      throw new POE(10, "arguments should be: 1st — HTML DOM container, 2nd — selectors map");
     }
 
     if (!$.isPlainObject(selectors)) {
@@ -48,7 +61,7 @@
         findMultiple = false;
 
       if (!/^[A-z\.]+$/.test(name)) {
-        throw "POE12: incorrect selector name `" + name + "`";
+        throw new POE(11, "incorrect selector name `" + name + "`");
       }
 
       if ($.isArray(selector) &&
@@ -61,7 +74,7 @@
           var id = selector[1].call(this, this);
           if (id) {
             if (domParts[name][id]) {
-              throw "POE13: duplicate identifier `" + id + "` in DOM part namespace `"+ name +"`";
+              throw new POE(12, "duplicate identifier `" + id + "` in DOM part namespace `"+ name +"`");
             }
             domParts[name][id] = this;
           }
@@ -79,12 +92,12 @@
         }
         found = $(sourceContainer).find(selector);
         if (found.length === 0) {
-          throw "POE14: DOM parts weren't found for selector `" + name + "`";
+          throw new POE(13, "DOM parts weren't found for selector `" + name + "`");
         } else if (found.length > 1) {
           if (findMultiple) {
             found = Array.prototype.slice.call(found);
           } else {
-            throw "POE15: multiple DOM parts found for selector `" + name + "`";
+            throw new POE(14, "multiple DOM parts found for selector `" + name + "`");
           }
         } else {
           found = found[0];
@@ -93,7 +106,7 @@
       }
 
       else {
-        throw "POE16: invalid selector value";
+        throw new POE(15, "invalid selector value");
       }
 
     });
@@ -117,7 +130,7 @@
     //   -------------------------------
 
     if ($.type(target) !== 'object') {
-      throw "POE01: invalid target (1st argument should be an object)!";
+      throw new POE(1, "invalid target (1st argument should be an object)!");
     }
 
     if (!$.isPlainObject(options)) {
@@ -140,7 +153,7 @@
 
     if (opts.container !== undefined) {
       if (!$.isElement(opts.container)) {
-        throw "POE02: container is invalid!";
+        throw new POE(2, "container is invalid!");
       }
       target.DOM.container = opts.container;
     } else {
@@ -164,10 +177,10 @@
 
       if (typeof opts.template === 'string') {
         if (!$.isFunction(opts.templateEngine)) {
-          throw "POE03: templateEngine not configured";
+          throw new POE(3, "templateEngine not configured");
         }
       } else if (typeof opts.template !== 'function' ) {
-        throw "POE04: invalid template";
+        throw new POE(4, "invalid template");
       }
 
 
@@ -182,7 +195,7 @@
           rendered = opts.template(opts.context);
         }
       } catch (e) {
-        throw "POE20: template error: " + e;
+        throw new POE(5, "template error: " + e);
       }
 
       $(target.DOM.container).html(rendered);
