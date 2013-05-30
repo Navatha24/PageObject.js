@@ -45,7 +45,7 @@
   }
 
   // Extract jQuery DOM parts from a container using a map of selectors.
-  priv.extractParts = function (sourceContainer, selectors) {
+  $.extractParts = function (sourceContainer, selectors) {
     var domParts = {};
 
     if (!$.isElement(sourceContainer)) {
@@ -82,7 +82,7 @@
       }
 
       else if ($.isPlainObject(selector)) {
-        domParts[name] = priv.extractParts(sourceContainer, selector);
+        domParts[name] = $.extractParts(sourceContainer, selector);
       }
 
       else if (typeof selector === 'string') {
@@ -209,7 +209,7 @@
       opts.selectors = {};
     }
 
-    domParts = priv.extractParts(target.DOM.container, opts.selectors);
+    domParts = $.extractParts(target.DOM.container, opts.selectors);
     $.extend(true, target.DOM, domParts);
 
 
