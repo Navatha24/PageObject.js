@@ -54,18 +54,18 @@ $(document).ready(function() {
   test("should work only if 1st arg is a valid HTML DOM element", function () {
     var body = $('body')[0], selectors = { qunit: 'div#qunit' };
 
-    throws(function(){  $.extractParts(); },                     /^POE10/, "fails if given nothing");
-    throws(function(){  $.extractParts(null, selectors); },      /^POE10/, "fails if 2nd arg is valid and 1st is null");
-    throws(function(){  $.extractParts(undefined, selectors); }, /^POE10/, "fails if 2nd arg is valid and 1st is undefined");
-    throws(function(){  $.extractParts(12345, selectors); },     /^POE10/, "fails if 2nd arg is valid and 1st is number");
-    throws(function(){  $.extractParts(12.45, selectors); },     /^POE10/, "fails if 2nd arg is valid and 1st is float number");
-    throws(function(){  $.extractParts(Infinity, selectors); },  /^POE10/, "fails if 2nd arg is valid and 1st is Infinity");
-    throws(function(){  $.extractParts('str', selectors); },     /^POE10/, "fails if 2nd arg is valid and 1st is string");
-    throws(function(){  $.extractParts(/re/, selectors); },      /^POE10/, "fails if 2nd arg is valid and 1st is regexp");
-    throws(function(){  $.extractParts([], selectors); },        /^POE10/, "fails if 2nd arg is valid and 1st is array");
-    throws(function(){  $.extractParts($.noop, selectors); },    /^POE10/, "fails if 2nd arg is valid and 1st is function");
-    throws(function(){  $.extractParts(selectors, selectors); }, /^POE10/, "fails if 2nd arg is valid and 1st is object");
-    throws(function(){  $.extractParts(selectors, body); },      /^POE10/, "fails if both arguments are valid but their places are swapped");
+    throws(function(){  $.extractParts(); },                     /^PageObjectError #10/, "fails if given nothing");
+    throws(function(){  $.extractParts(null, selectors); },      /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is null");
+    throws(function(){  $.extractParts(undefined, selectors); }, /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is undefined");
+    throws(function(){  $.extractParts(12345, selectors); },     /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is number");
+    throws(function(){  $.extractParts(12.45, selectors); },     /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is float number");
+    throws(function(){  $.extractParts(Infinity, selectors); },  /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is Infinity");
+    throws(function(){  $.extractParts('str', selectors); },     /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is string");
+    throws(function(){  $.extractParts(/re/, selectors); },      /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is regexp");
+    throws(function(){  $.extractParts([], selectors); },        /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is array");
+    throws(function(){  $.extractParts($.noop, selectors); },    /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is function");
+    throws(function(){  $.extractParts(selectors, selectors); }, /^PageObjectError #10/, "fails if 2nd arg is valid and 1st is object");
+    throws(function(){  $.extractParts(selectors, body); },      /^PageObjectError #10/, "fails if both arguments are valid but their places are swapped");
 
     var e = [], allEmpty = true;
     e.push( $.extractParts(body, null));
@@ -99,8 +99,8 @@ $(document).ready(function() {
   test("selector names in selectors object should be alpha only", function () {
     var body = $('body')[0], validSelector = 'div#qunit';
 
-    throws(function(){  $.extractParts(body, { '123': validSelector }); }, /^POE11/, "fails receiving numeric selector name");
-    throws(function(){  $.extractParts(body, { '!@#': validSelector }); }, /^POE11/, "fails receiving selector name with symbols");
+    throws(function(){  $.extractParts(body, { '123': validSelector }); }, /^PageObjectError #11/, "fails receiving numeric selector name");
+    throws(function(){  $.extractParts(body, { '!@#': validSelector }); }, /^PageObjectError #11/, "fails receiving selector name with symbols");
 
     $.extractParts(body, { 'abc': validSelector });
     ok( true, 'passes when selector names are alpha only');
@@ -115,15 +115,15 @@ $(document).ready(function() {
     ok( $.isElement(DOM.abc), "and it should have valid key as selector's name in it");
     ok( DOM.abc == document.getElementById('qunit'), 'and extracted element by selectors should be relevant');
 
-    throws(function(){  DOM = $.extractParts(body, { abc: 'small' }); }, /^POE13/, "should fail if no elements found for selector");
-    throws(function(){  DOM = $.extractParts(body, { abc: 'div' }); }, /^POE14/, "should fail if more than one element was found for selector");
+    throws(function(){  DOM = $.extractParts(body, { abc: 'small' }); }, /^PageObjectError #13/, "should fail if no elements found for selector");
+    throws(function(){  DOM = $.extractParts(body, { abc: 'div' }); }, /^PageObjectError #14/, "should fail if more than one element was found for selector");
 
     DOM = $.extractParts(body, { divs: '[] > div' });
     ok( true, "shouldn't fail if selector starts with [] and multiple elements found for the selector");
     ok( $.isArray(DOM.divs), "and the result should be an array");
     ok( DOM.divs.length == 2 && DOM.divs[0] == document.getElementById('qunit') && DOM.divs[1] == document.getElementById('qunit-fixture'), "and that array should consist of exactly same number of elements as there are in the DOM within the container");
 
-    throws(function(){  $.extractParts(body, { divs: '[] small' }); }, /^POE13/, "should fail if selector starts with [] and no elements found for the selector");
+    throws(function(){  $.extractParts(body, { divs: '[] small' }); }, /^PageObjectError #13/, "should fail if selector starts with [] and no elements found for the selector");
   });
 
   test("selector is object of other selectors", function () {
@@ -150,11 +150,11 @@ $(document).ready(function() {
         DOM.abc.green == document.getElementById('green') &&
         DOM.abc.blue == document.getElementById('blue'), "should extract correct elements assign them to corresponding properties");
 
-    throws(function(){  DOM = $.extractParts(body, { abc: [] }); },                  /^POE15/, "should fail if array is empty");
-    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div' ] }); },           /^POE15/, "should fail if array has only 1 elem");
-    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div', $.noop, 3] }); }, /^POE15/, "should fail if array has only more than 2 elems");
-    throws(function(){  DOM = $.extractParts(body, { abc: [ 1, $.noop ] }); },       /^POE15/, "should fail if 1st array elem is not a string selector");
-    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div', 1 ] }); },        /^POE15/, "should fail if 2nd array elem is not a function");
+    throws(function(){  DOM = $.extractParts(body, { abc: [] }); },                  /^PageObjectError #15/, "should fail if array is empty");
+    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div' ] }); },           /^PageObjectError #15/, "should fail if array has only 1 elem");
+    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div', $.noop, 3] }); }, /^PageObjectError #15/, "should fail if array has only more than 2 elems");
+    throws(function(){  DOM = $.extractParts(body, { abc: [ 1, $.noop ] }); },       /^PageObjectError #15/, "should fail if 1st array elem is not a string selector");
+    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div', 1 ] }); },        /^PageObjectError #15/, "should fail if 2nd array elem is not a function");
 
     DOM = $.extractParts(body, { abc: [ 'ul > li', $.noop ] });
     ok( objectSize(DOM.abc) === 0, "should not process on which function returns falsy name" );
@@ -162,22 +162,22 @@ $(document).ready(function() {
     var dup = $('<li></li>').insertAfter('#blue').attr('id', 'blue');
     throws(function(){
       DOM = $.extractParts(body, { abc: [ 'ul > li', function () { return $(this).attr('id'); } ] });
-    }, /^POE12/, "should fail if there's a second element found for a single name");
+    }, /^PageObjectError #12/, "should fail if there's a second element found for a single name");
   });
 
   test("selector is anything else — should always fail", function () {
     var body = $('body')[0], DOM;
 
-    throws(function(){  $.extractParts(body, { abc: null }); },      /^POE15/, "null");
-    throws(function(){  $.extractParts(body, { abc: undefined }); }, /^POE15/, "undefined");
-    throws(function(){  $.extractParts(body, { abc: true }); },      /^POE15/, "true");
-    throws(function(){  $.extractParts(body, { abc: false }); },     /^POE15/, "false");
-    throws(function(){  $.extractParts(body, { abc: 12345 }); },     /^POE15/, "number");
-    throws(function(){  $.extractParts(body, { abc: 12.45 }); },     /^POE15/, "float number");
-    throws(function(){  $.extractParts(body, { abc: 0 }); },         /^POE15/, "zero");
-    throws(function(){  $.extractParts(body, { abc: Infinity }); },  /^POE15/, "Infinity");
-    throws(function(){  $.extractParts(body, { abc: /re/ }); },      /^POE15/, "regexp");
-    throws(function(){  $.extractParts(body, { abc: $.noop }); },    /^POE15/, "function");
+    throws(function(){  $.extractParts(body, { abc: null }); },      /^PageObjectError #15/, "null");
+    throws(function(){  $.extractParts(body, { abc: undefined }); }, /^PageObjectError #15/, "undefined");
+    throws(function(){  $.extractParts(body, { abc: true }); },      /^PageObjectError #15/, "true");
+    throws(function(){  $.extractParts(body, { abc: false }); },     /^PageObjectError #15/, "false");
+    throws(function(){  $.extractParts(body, { abc: 12345 }); },     /^PageObjectError #15/, "number");
+    throws(function(){  $.extractParts(body, { abc: 12.45 }); },     /^PageObjectError #15/, "float number");
+    throws(function(){  $.extractParts(body, { abc: 0 }); },         /^PageObjectError #15/, "zero");
+    throws(function(){  $.extractParts(body, { abc: Infinity }); },  /^PageObjectError #15/, "Infinity");
+    throws(function(){  $.extractParts(body, { abc: /re/ }); },      /^PageObjectError #15/, "regexp");
+    throws(function(){  $.extractParts(body, { abc: $.noop }); },    /^PageObjectError #15/, "function");
   });
 
 
@@ -185,17 +185,17 @@ $(document).ready(function() {
 
   // CHECK IF 1ST ARGUMENT IS OBJECT
   test("1st argument should always be an object", function () {
-    throws(function(){  $.turnToPageObject(); },               /^POE01/, "should fail if 1st arg is omitted");
-    throws(function(){  $.turnToPageObject(undefined); },      /^POE01/, "should fail if 1st arg is undefined");
-    throws(function(){  $.turnToPageObject(null); },           /^POE01/, "should fail if 1st arg is null");
-    throws(function(){  $.turnToPageObject(true); },           /^POE01/, "should fail if 1st arg is boolean true");
-    throws(function(){  $.turnToPageObject(false); },          /^POE01/, "should fail if 1st arg is boolean false");
-    throws(function(){  $.turnToPageObject("str"); },          /^POE01/, "should fail if 1st arg is string");
-    throws(function(){  $.turnToPageObject(12345); },          /^POE01/, "should fail if 1st arg is number");
-    throws(function(){  $.turnToPageObject(12.45); },          /^POE01/, "should fail if 1st arg is float number");
-    throws(function(){  $.turnToPageObject($.noop); },         /^POE01/, "should fail if 1st arg is function");
-    throws(function(){  $.turnToPageObject(/re/); },           /^POE01/, "should fail if 1st arg is regexp");
-    throws(function(){  $.turnToPageObject([]); },             /^POE01/, "should fail if 1st arg is array");
+    throws(function(){  $.turnToPageObject(); },               /^PageObjectError #01/, "should fail if 1st arg is omitted");
+    throws(function(){  $.turnToPageObject(undefined); },      /^PageObjectError #01/, "should fail if 1st arg is undefined");
+    throws(function(){  $.turnToPageObject(null); },           /^PageObjectError #01/, "should fail if 1st arg is null");
+    throws(function(){  $.turnToPageObject(true); },           /^PageObjectError #01/, "should fail if 1st arg is boolean true");
+    throws(function(){  $.turnToPageObject(false); },          /^PageObjectError #01/, "should fail if 1st arg is boolean false");
+    throws(function(){  $.turnToPageObject("str"); },          /^PageObjectError #01/, "should fail if 1st arg is string");
+    throws(function(){  $.turnToPageObject(12345); },          /^PageObjectError #01/, "should fail if 1st arg is number");
+    throws(function(){  $.turnToPageObject(12.45); },          /^PageObjectError #01/, "should fail if 1st arg is float number");
+    throws(function(){  $.turnToPageObject($.noop); },         /^PageObjectError #01/, "should fail if 1st arg is function");
+    throws(function(){  $.turnToPageObject(/re/); },           /^PageObjectError #01/, "should fail if 1st arg is regexp");
+    throws(function(){  $.turnToPageObject([]); },             /^PageObjectError #01/, "should fail if 1st arg is array");
 
     $.turnToPageObject({});
     ok( true, "works when 1st arg is a plain object");
@@ -225,17 +225,17 @@ $(document).ready(function() {
 
   // PREPARE CONTAINER
   test("when options.container is specified it should be a valid HTML DOM element or all should fail", function () {
-    throws(function(){  $.turnToPageObject({}, { container: null}); },         /^POE02/, "null");
-    throws(function(){  $.turnToPageObject({}, { container: true}); },         /^POE02/, "true");
-    throws(function(){  $.turnToPageObject({}, { container: false}); },        /^POE02/, "false");
-    throws(function(){  $.turnToPageObject({}, { container: 12345}); },        /^POE02/, "number");
-    throws(function(){  $.turnToPageObject({}, { container: 123.5}); },        /^POE02/, "float number");
-    throws(function(){  $.turnToPageObject({}, { container: Infinity}); },     /^POE02/, "Infinity");
-    throws(function(){  $.turnToPageObject({}, { container: 'str'}); },        /^POE02/, "string");
-    throws(function(){  $.turnToPageObject({}, { container: /re/}); },         /^POE02/, "regexp");
-    throws(function(){  $.turnToPageObject({}, { container: []}); },           /^POE02/, "array");
-    throws(function(){  $.turnToPageObject({}, { container: {}}); },           /^POE02/, "object");
-    throws(function(){  $.turnToPageObject({}, { container: $.noop}); },       /^POE02/, "function");
+    throws(function(){  $.turnToPageObject({}, { container: null}); },         /^PageObjectError #02/, "null");
+    throws(function(){  $.turnToPageObject({}, { container: true}); },         /^PageObjectError #02/, "true");
+    throws(function(){  $.turnToPageObject({}, { container: false}); },        /^PageObjectError #02/, "false");
+    throws(function(){  $.turnToPageObject({}, { container: 12345}); },        /^PageObjectError #02/, "number");
+    throws(function(){  $.turnToPageObject({}, { container: 123.5}); },        /^PageObjectError #02/, "float number");
+    throws(function(){  $.turnToPageObject({}, { container: Infinity}); },     /^PageObjectError #02/, "Infinity");
+    throws(function(){  $.turnToPageObject({}, { container: 'str'}); },        /^PageObjectError #02/, "string");
+    throws(function(){  $.turnToPageObject({}, { container: /re/}); },         /^PageObjectError #02/, "regexp");
+    throws(function(){  $.turnToPageObject({}, { container: []}); },           /^PageObjectError #02/, "array");
+    throws(function(){  $.turnToPageObject({}, { container: {}}); },           /^PageObjectError #02/, "object");
+    throws(function(){  $.turnToPageObject({}, { container: $.noop}); },       /^PageObjectError #02/, "function");
 
     var a = {}, old = $.turnToPageObject.priv.defaultOptions.containerElement;
     $.turnToPageObject.priv.defaultOptions.containerElement = 'strong';
@@ -278,14 +278,14 @@ $(document).ready(function() {
       $.turnToPageObject(a, {
         template: "doesn't matter"
       });
-    }, /^POE03/, "fails when there is template but no templateEngine specified or configured");
+    }, /^PageObjectError #03/, "fails when there is template but no templateEngine specified or configured");
 
     throws(function(){
       $.turnToPageObject(a, {
         template: "doesn't matter",
         templateEngine: Infinity
       });
-    }, /^POE03/, "also fails when templateEngine is not a function");
+    }, /^PageObjectError #03/, "also fails when templateEngine is not a function");
 
     var called = null;
     function tmpl(str, context) { called = { template: str, context: context }; return ""; };
@@ -307,16 +307,16 @@ $(document).ready(function() {
 
   // RENDER TEMPLATE
   test("template is neither string, nor function — should always fail", function () {
-    throws(function(){ $.turnToPageObject({}, { template: null }); },     /^POE04/, "null");
-    throws(function(){ $.turnToPageObject({}, { template: true }); },     /^POE04/, "true");
-    throws(function(){ $.turnToPageObject({}, { template: false }); },    /^POE04/, "false");
-    throws(function(){ $.turnToPageObject({}, { template: 12345 }); },    /^POE04/, "number");
-    throws(function(){ $.turnToPageObject({}, { template: 12.45 }); },    /^POE04/, "float number");
-    throws(function(){ $.turnToPageObject({}, { template: Infinity }); }, /^POE04/, "Infinity");
-    throws(function(){ $.turnToPageObject({}, { template: /re/ }); },     /^POE04/, "regexp");
-    throws(function(){ $.turnToPageObject({}, { template: [] }); },       /^POE04/, "array");
-    throws(function(){ $.turnToPageObject({}, { template: {} }); },       /^POE04/, "object");
-    throws(function(){ $.turnToPageObject({}, { template: $('li')[0]});}, /^POE04/, "HTML DOM element");
+    throws(function(){ $.turnToPageObject({}, { template: null }); },     /^PageObjectError #04/, "null");
+    throws(function(){ $.turnToPageObject({}, { template: true }); },     /^PageObjectError #04/, "true");
+    throws(function(){ $.turnToPageObject({}, { template: false }); },    /^PageObjectError #04/, "false");
+    throws(function(){ $.turnToPageObject({}, { template: 12345 }); },    /^PageObjectError #04/, "number");
+    throws(function(){ $.turnToPageObject({}, { template: 12.45 }); },    /^PageObjectError #04/, "float number");
+    throws(function(){ $.turnToPageObject({}, { template: Infinity }); }, /^PageObjectError #04/, "Infinity");
+    throws(function(){ $.turnToPageObject({}, { template: /re/ }); },     /^PageObjectError #04/, "regexp");
+    throws(function(){ $.turnToPageObject({}, { template: [] }); },       /^PageObjectError #04/, "array");
+    throws(function(){ $.turnToPageObject({}, { template: {} }); },       /^PageObjectError #04/, "object");
+    throws(function(){ $.turnToPageObject({}, { template: $('li')[0]});}, /^PageObjectError #04/, "HTML DOM element");
   });
 
   // RENDER TEMPLATE
@@ -353,14 +353,14 @@ $(document).ready(function() {
       $.turnToPageObject({}, {
         template: function () { throw "SHOUT1"; }
       });
-    }, /^POE05/, "it raises error when function template is used");
+    }, /^PageObjectError #05/, "it raises error when function template is used");
 
     throws(function(){
       $.turnToPageObject({}, {
         template: '',
         templateEngine: function () { throw "SHOUT2"; }
       });
-    }, /^POE05/, "it also raises error when templateEngine is used");
+    }, /^PageObjectError #05/, "it also raises error when templateEngine is used");
   });
 
 
