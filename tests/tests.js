@@ -482,4 +482,54 @@ $(document).ready(function() {
     deepEqual(defopts, expected, "it does nothing when argument is not a plain object");
   });
 
+
+
+  module("$.PageObject");
+
+  test("should make target of a newly constructed object and not create namespace on it", function () {
+    var ttpo = $.turnToPageObject,
+      calledTarget,
+      calledOptions;
+
+    $.turnToPageObject = function (target, options) {
+      calledTarget = target;
+      calledOptions = options;
+    }
+
+    po = new $.PageObject({ a: 1, b: 2, c: 3 });
+    ok( calledTarget == po, "should call $.turnToPageObject with same target as returned instance");
+    deepEqual( calledOptions, { a: 1, b: 2, c: 3, namespace: null }, "should call $.turnToPageObject with same options except for `namespace` that should always be null");
+
+    $.turnToPageObject = ttpo;
+  });
+
+  test("should work same way with either new keyword or without it", function () {
+    var withNew = new $.PageObject(),
+      without = $.PageObject();
+
+    ok( objectSize(withNew) == objectSize(without) );
+    ok( $.isElement(withNew.container) == $.isElement(without.container) );
+    ok( withNew.container.nodeName == without.container.nodeName);
+    ok( $(withNew.container).html() == $(without.container).html() );
+    ok( withNew.prototype == without.prototype );
+  });
+
+  test("should treat any non object value of options argument as object with just namespace == null", function () {
+    var po, ttpo = $.turnToPageObject, calledOptions;
+
+    $.turnToPageObject = function (target, options) {
+      calledOptions = options;
+    }
+
+    po = $.PageObject(null);
+    deepEqual( calledOptions, { namespace: null });
+
+    po = $.PageObject(false);
+    deepEqual( calledOptions, { namespace: null });
+
+    po = $.PageObject(123);
+    deepEqual( calledOptions, { namespace: null });
+
+    $.turnToPageObject = ttpo;
+  });
 });

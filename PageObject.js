@@ -287,6 +287,21 @@
     }
   };
 
+
+  $.PageObject = function PageObject(options) {
+    if (!(this instanceof PageObject)) {
+      return new PageObject(options);
+    }
+
+    if (!$.isPlainObject(options)) {
+      options = {};
+    }
+
+    options.namespace = null;
+    $.turnToPageObject(this, options);
+  };
+
+
   // Expose private things for testing.
   // Don't worry, following lines are not included
   // in minimized production version.
