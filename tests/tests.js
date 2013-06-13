@@ -107,7 +107,7 @@ $(document).ready(function() {
   });
 
   test("selector is string", function () {
-    var body = $('body')[0], DOM, validSelector = 'div.qunit';
+    var body = $('body')[0], DOM;
 
     DOM = $.extractParts(body, { 'abc': 'div#qunit' });
     ok( $.isPlainObject(DOM), 'the result should be a plain object');
@@ -115,15 +115,52 @@ $(document).ready(function() {
     ok( $.isElement(DOM.abc), "and it should have valid key as selector's name in it");
     ok( DOM.abc == document.getElementById('qunit'), 'and extracted element by selectors should be relevant');
 
+    deepEqual( $.extractParts(body, { 'abc': 'div#qunit' }), $.extractParts(body, { 'abc': '      div#qunit     ' }), "selector is trimmed before applying it and spaces don't influence the result");
+
     throws(function(){  DOM = $.extractParts(body, { abc: 'small' }); }, /^PageObjectError #13/, "should fail if no elements found for selector");
     throws(function(){  DOM = $.extractParts(body, { abc: 'div' }); }, /^PageObjectError #14/, "should fail if more than one element was found for selector");
 
+    // [] and > 0
     DOM = $.extractParts(body, { divs: '[] > div' });
     ok( true, "shouldn't fail if selector starts with [] and multiple elements found for the selector");
     ok( $.isArray(DOM.divs), "and the result should be an array");
     ok( DOM.divs.length == 2 && DOM.divs[0] == document.getElementById('qunit') && DOM.divs[1] == document.getElementById('qunit-fixture'), "and that array should consist of exactly same number of elements as there are in the DOM within the container");
 
+    // [] and 0
     throws(function(){  $.extractParts(body, { divs: '[] small' }); }, /^PageObjectError #13/, "should fail if selector starts with [] and no elements found for the selector");
+
+    // ? and 0
+    DOM = $.extractParts(body, { small: '? small' });
+    ok( true, "shouldn't fail if selector starts with ? and no elements found for the selector");
+    ok( DOM.small === undefined, "and the result should be undefined");
+
+    // ? and 1
+    DOM = $.extractParts(body, { divs: '? div#qunit' });
+    ok( true, "shouldn't fail if selector starts with ? and one element found for the selector");
+    ok( $.isElement(DOM.divs) && document.getElementById('qunit') == DOM.divs, "and the result should be a DOM element");
+
+    // ? and > 1
+    throws(function(){  DOM = $.extractParts(body, { abc: '? div' }); }, /^PageObjectError #14/, "should fail if more than one element was found for selector starting with just ?");
+
+    // ? and [] and 0
+    DOM = $.extractParts(body, { small: '? [] small' });
+    ok( true, "shouldn't fail if selector starts with `? []` and no elements found for the selector");
+    ok( DOM.small == undefined, "and the result should be undefined");
+
+    // ? and [] and  1
+    DOM = $.extractParts(body, { divs: '? [] div#qunit' });
+    ok( true, "shouldn't fail if selector starts with `? []` and one element found for the selector");
+    ok( $.isArray(DOM.divs) && DOM.divs.length == 1, "and the result should be an array with 1 element");
+    ok( $.isElement(DOM.divs[0]) && document.getElementById('qunit') == DOM.divs[0], "and that element should be a correct DOM element");
+
+    // ? and [] and > 1
+    DOM = $.extractParts(body, { divs: '? [] ul li' });
+    ok( true, "shouldn't fail if selector starts with `? []` and multiple elements found for the selector");
+    ok( DOM.divs.length == 3 && DOM.divs[0] == document.getElementById('red') && DOM.divs[1] == document.getElementById('green') && DOM.divs[2] == document.getElementById('blue'), "and the result should be an array of those DOM elements");
+
+    // [] and ?
+    DOM = $.extractParts(body, { abc: '[] ? div' });
+    ok( true, "shouldn't fail if selector starts with `[] ?` (vise verse)");
   });
 
   test("selector is object of other selectors", function () {

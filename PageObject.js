@@ -60,7 +60,8 @@
 
     $.each(selectors, function (name, selector) {
       var found,
-        findMultiple = false;
+        notSure,
+        findMultiple;
 
       if (!/^[A-z\.]+$/.test(name)) {
         throw new POE(11, "incorrect selector name `" + name + "`");
@@ -88,22 +89,48 @@
       }
 
       else if (typeof selector === 'string') {
-        findMultiple = selector.indexOf('[]') === 0;
-        if (findMultiple) {
-          selector = selector.replace('[]', '');
+
+        while (true) {
+          selector = $.trim(selector);
+
+          if (selector.indexOf('?') === 0) {
+            notSure = true;
+            selector = $.trim(selector.substring(1));
+            continue;
+          }
+
+          if (selector.indexOf('[]') === 0) {
+            findMultiple = true;
+            selector = $.trim(selector.substring(2));
+            continue;
+          }
+
+          break;
         }
+
         found = $(sourceContainer).find(selector);
-        if (found.length === 0) {
-          throw new POE(13, "DOM parts weren't found for selector `" + name + "`");
-        } else if (found.length > 1) {
-          if (findMultiple) {
-            found = Array.prototype.slice.call(found);
+        found = $.makeArray(found);
+
+        if (found.length == 0) {
+          if (notSure) {
+            found = undefined;
           } else {
+            throw new POE(13, "DOM parts weren't found for selector `" + name + "`");
+          }
+        }
+
+        else if (found.length == 1) {
+          if (!findMultiple) {
+            found = found[0];
+          }
+        }
+
+        else if (found.length > 1) {
+          if (!findMultiple) {
             throw new POE(14, "multiple DOM parts found for selector `" + name + "`");
           }
-        } else {
-          found = found[0];
         }
+
         domParts[name] = found;
       }
 
