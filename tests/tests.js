@@ -262,16 +262,27 @@ $(document).ready(function() {
 
   */
 
+  // DON'T USE NAMESPACE IF THERE'S SUCH NEED
+  test("shouldn't create DOM namespace if there's namespace option eq to null", function () {
+    var a = {};
+    $.turnToPageObject(a, { namespace: null} );
+    ok( a.DOM === undefined, "doesn't create default namespace");
+    ok( $.isElement(a.container), "fills target object with DOM elements");
+  });
 
   // CREATE DOM NAMESPACE IF THERE'S NO SUCH
   test("should create DOM namespace if there's no DOM namespace yet", function () {
     var a = {};
     $.turnToPageObject(a);
-    ok( $.isPlainObject(a.DOM), "creates DOM namespace when there's no such");
+    ok( $.isPlainObject(a.DOM), "creates DOM namespace when there's no such (default)");
 
-    var b = { DOM: { a : 123 } };
-    $.turnToPageObject(b);
-    ok( b.DOM.a == 123, "does not create new DOM namespace when there is such already");
+    var a = {};
+    $.turnToPageObject(a, { namespace: 'nomatter' });
+    ok( $.isPlainObject(a.nomatter), "creates DOM namespace when there's no such specified in options");
+
+    var a = { DOM: { a : 123 } };
+    $.turnToPageObject(a);
+    ok( a.DOM.a == 123, "does not create new DOM namespace when there is such already");
   });
 
   // PREPARE CONTAINER

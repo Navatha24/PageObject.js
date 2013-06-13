@@ -38,6 +38,7 @@
     template: undefined,
     context: {},
     selectors: {},
+    namespace: 'DOM',
     hide: false
   };
 
@@ -162,7 +163,7 @@
   }
 
   $.turnToPageObject = function (target, options) {
-    var opts, rendered, domParts;
+    var opts, rendered, domParts, namespace;
 
 
     //   CHECK IF 1ST ARGUMENT IS OBJECT
@@ -176,14 +177,27 @@
       options = {};
     }
 
+
     opts = $.extend({}, priv.defaultOptions, options);
 
 
-    //   CREATE DOM NAMESPACE IF THERE'S NO SUCH
-    //   ---------------------------------------
+    if (options.namespace === null) {
 
-    if (!$.isPlainObject(target.DOM)) {
-      target.DOM = {};
+      //   DON'T USE NAMESPACE IF THERE'S SUCH NEED
+      //   ----------------------------------------
+
+      namespace = target;
+
+    } else {
+
+      //   CREATE DOM NAMESPACE IF THERE'S NO SUCH
+      //   ---------------------------------------
+
+      if (!$.isPlainObject(target[opts.namespace])) {
+        target[opts.namespace] = {};
+      }
+
+      namespace = target[opts.namespace];
     }
 
 
@@ -194,9 +208,9 @@
       if (!$.isElement(opts.container)) {
         throw new POE(2, "container is invalid!");
       }
-      target.DOM.container = opts.container;
+      namespace.container = opts.container;
     } else {
-      target.DOM.container = window.document.createElement(opts.containerElement);
+      namespace.container = window.document.createElement(opts.containerElement);
     }
 
 
@@ -204,14 +218,14 @@
     //   -------------------------------
 
     if (opts.containerClass) {
-      $(target.DOM.container).addClass(opts.containerClass);
+      $(namespace.container).addClass(opts.containerClass);
     }
 
 
     //   ESTABLISH REFERENCE
     //   -------------------
 
-    $(target.DOM.container).data('pageObject', target);
+    $(namespace.container).data('pageObject', target);
 
 
     //   RENDER TEMPLATE
@@ -242,7 +256,7 @@
         throw new POE(5, "template error: " + e);
       }
 
-      $(target.DOM.container).html(rendered);
+      $(namespace.container).html(rendered);
     }
 
 
@@ -253,15 +267,15 @@
       opts.selectors = {};
     }
 
-    domParts = $.extractParts(target.DOM.container, opts.selectors);
-    $.extend(true, target.DOM, domParts);
+    domParts = $.extractParts(namespace.container, opts.selectors);
+    $.extend(true, namespace, domParts);
 
 
     //   HIDE THE CONTAINER IF IT IS NECESSARY
     //   -------------------------------------
 
     if (opts.hide) {
-      $(target.DOM.container).hide();
+      $(namespace.container).hide();
     }
 
     return target;
