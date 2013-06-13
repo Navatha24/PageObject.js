@@ -72,12 +72,18 @@
         $.type(selector[0]) === 'string' &&
         $.isFunction(selector[1])) {
 
+        selector[0] = $.trim(selector[0]);
+
+        if (selector[0].indexOf('?') === 0 || selector[0].indexOf('[]') === 0) {
+          throw new POE(12, "[] and ? features are unavailable when selector is an array");
+        }
+
         domParts[name] = {};
         $(sourceContainer).find(selector[0]).each(function () {
           var id = selector[1].call(this, this);
           if (id) {
             if (domParts[name][id]) {
-              throw new POE(12, "duplicate identifier `" + id + "` in DOM part namespace `"+ name +"`");
+              throw new POE(13, "duplicate identifier `" + id + "` in DOM part namespace `"+ name +"`");
             }
             domParts[name][id] = this;
           }
@@ -115,7 +121,7 @@
           if (notSure) {
             found = undefined;
           } else {
-            throw new POE(13, "DOM parts weren't found for selector `" + name + "`");
+            throw new POE(14, "DOM parts weren't found for selector `" + name + "`");
           }
         }
 
@@ -127,7 +133,7 @@
 
         else if (found.length > 1) {
           if (!findMultiple) {
-            throw new POE(14, "multiple DOM parts found for selector `" + name + "`");
+            throw new POE(15, "multiple DOM parts found for selector `" + name + "`");
           }
         }
 
@@ -135,7 +141,7 @@
       }
 
       else {
-        throw new POE(15, "invalid selector value");
+        throw new POE(16, "invalid selector value");
       }
 
     });

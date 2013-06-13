@@ -117,8 +117,8 @@ $(document).ready(function() {
 
     deepEqual( $.extractParts(body, { 'abc': 'div#qunit' }), $.extractParts(body, { 'abc': '      div#qunit     ' }), "selector is trimmed before applying it and spaces don't influence the result");
 
-    throws(function(){  DOM = $.extractParts(body, { abc: 'small' }); }, /^PageObjectError #13/, "should fail if no elements found for selector");
-    throws(function(){  DOM = $.extractParts(body, { abc: 'div' }); }, /^PageObjectError #14/, "should fail if more than one element was found for selector");
+    throws(function(){  DOM = $.extractParts(body, { abc: 'small' }); }, /^PageObjectError #14/, "should fail if no elements found for selector");
+    throws(function(){  DOM = $.extractParts(body, { abc: 'div' }); }, /^PageObjectError #15/, "should fail if more than one element was found for selector");
 
     // [] and > 0
     DOM = $.extractParts(body, { divs: '[] > div' });
@@ -127,7 +127,7 @@ $(document).ready(function() {
     ok( DOM.divs.length == 2 && DOM.divs[0] == document.getElementById('qunit') && DOM.divs[1] == document.getElementById('qunit-fixture'), "and that array should consist of exactly same number of elements as there are in the DOM within the container");
 
     // [] and 0
-    throws(function(){  $.extractParts(body, { divs: '[] small' }); }, /^PageObjectError #13/, "should fail if selector starts with [] and no elements found for the selector");
+    throws(function(){  $.extractParts(body, { divs: '[] small' }); }, /^PageObjectError #14/, "should fail if selector starts with [] and no elements found for the selector");
 
     // ? and 0
     DOM = $.extractParts(body, { small: '? small' });
@@ -140,7 +140,7 @@ $(document).ready(function() {
     ok( $.isElement(DOM.divs) && document.getElementById('qunit') == DOM.divs, "and the result should be a DOM element");
 
     // ? and > 1
-    throws(function(){  DOM = $.extractParts(body, { abc: '? div' }); }, /^PageObjectError #14/, "should fail if more than one element was found for selector starting with just ?");
+    throws(function(){  DOM = $.extractParts(body, { abc: '? div' }); }, /^PageObjectError #15/, "should fail if more than one element was found for selector starting with just ?");
 
     // ? and [] and 0
     DOM = $.extractParts(body, { small: '? [] small' });
@@ -187,11 +187,17 @@ $(document).ready(function() {
         DOM.abc.green == document.getElementById('green') &&
         DOM.abc.blue == document.getElementById('blue'), "should extract correct elements assign them to corresponding properties");
 
-    throws(function(){  DOM = $.extractParts(body, { abc: [] }); },                  /^PageObjectError #15/, "should fail if array is empty");
-    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div' ] }); },           /^PageObjectError #15/, "should fail if array has only 1 elem");
-    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div', $.noop, 3] }); }, /^PageObjectError #15/, "should fail if array has only more than 2 elems");
-    throws(function(){  DOM = $.extractParts(body, { abc: [ 1, $.noop ] }); },       /^PageObjectError #15/, "should fail if 1st array elem is not a string selector");
-    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div', 1 ] }); },        /^PageObjectError #15/, "should fail if 2nd array elem is not a function");
+    deepEqual(
+      $.extractParts(body, { abc: [ 'ul > li', function () { return $(this).attr('id'); } ] }),
+      $.extractParts(body, { abc: [ '         ul > li     ', function () { return $(this).attr('id'); } ] }),
+      "spaces in selector should not influence the result"
+    );
+
+    throws(function(){  DOM = $.extractParts(body, { abc: [] }); },                  /^PageObjectError #16/, "should fail if array is empty");
+    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div' ] }); },           /^PageObjectError #16/, "should fail if array has only 1 elem");
+    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div', $.noop, 3] }); }, /^PageObjectError #16/, "should fail if array has only more than 2 elems");
+    throws(function(){  DOM = $.extractParts(body, { abc: [ 1, $.noop ] }); },       /^PageObjectError #16/, "should fail if 1st array elem is not a string selector");
+    throws(function(){  DOM = $.extractParts(body, { abc: [ 'div', 1 ] }); },        /^PageObjectError #16/, "should fail if 2nd array elem is not a function");
 
     DOM = $.extractParts(body, { abc: [ 'ul > li', $.noop ] });
     ok( objectSize(DOM.abc) === 0, "should not process on which function returns falsy name" );
@@ -199,22 +205,30 @@ $(document).ready(function() {
     var dup = $('<li></li>').insertAfter('#blue').attr('id', 'blue');
     throws(function(){
       DOM = $.extractParts(body, { abc: [ 'ul > li', function () { return $(this).attr('id'); } ] });
-    }, /^PageObjectError #12/, "should fail if there's a second element found for a single name");
+    }, /^PageObjectError #13/, "should fail if there's a second element found for a single name");
+
+    throws(function(){
+      DOM = $.extractParts(body, { abc: [ '? ul > li', function () { return $(this).attr('id'); } ] });
+    }, /^PageObjectError #12/, "should fail if there's question mark feature used in selector");
+
+    throws(function(){
+      DOM = $.extractParts(body, { abc: [ '[] ul > li', function () { return $(this).attr('id'); } ] });
+    }, /^PageObjectError #12/, "should fail if there's [] feature used in selector");
   });
 
   test("selector is anything else — should always fail", function () {
     var body = $('body')[0], DOM;
 
-    throws(function(){  $.extractParts(body, { abc: null }); },      /^PageObjectError #15/, "null");
-    throws(function(){  $.extractParts(body, { abc: undefined }); }, /^PageObjectError #15/, "undefined");
-    throws(function(){  $.extractParts(body, { abc: true }); },      /^PageObjectError #15/, "true");
-    throws(function(){  $.extractParts(body, { abc: false }); },     /^PageObjectError #15/, "false");
-    throws(function(){  $.extractParts(body, { abc: 12345 }); },     /^PageObjectError #15/, "number");
-    throws(function(){  $.extractParts(body, { abc: 12.45 }); },     /^PageObjectError #15/, "float number");
-    throws(function(){  $.extractParts(body, { abc: 0 }); },         /^PageObjectError #15/, "zero");
-    throws(function(){  $.extractParts(body, { abc: Infinity }); },  /^PageObjectError #15/, "Infinity");
-    throws(function(){  $.extractParts(body, { abc: /re/ }); },      /^PageObjectError #15/, "regexp");
-    throws(function(){  $.extractParts(body, { abc: $.noop }); },    /^PageObjectError #15/, "function");
+    throws(function(){  $.extractParts(body, { abc: null }); },      /^PageObjectError #16/, "null");
+    throws(function(){  $.extractParts(body, { abc: undefined }); }, /^PageObjectError #16/, "undefined");
+    throws(function(){  $.extractParts(body, { abc: true }); },      /^PageObjectError #16/, "true");
+    throws(function(){  $.extractParts(body, { abc: false }); },     /^PageObjectError #16/, "false");
+    throws(function(){  $.extractParts(body, { abc: 12345 }); },     /^PageObjectError #16/, "number");
+    throws(function(){  $.extractParts(body, { abc: 12.45 }); },     /^PageObjectError #16/, "float number");
+    throws(function(){  $.extractParts(body, { abc: 0 }); },         /^PageObjectError #16/, "zero");
+    throws(function(){  $.extractParts(body, { abc: Infinity }); },  /^PageObjectError #16/, "Infinity");
+    throws(function(){  $.extractParts(body, { abc: /re/ }); },      /^PageObjectError #16/, "regexp");
+    throws(function(){  $.extractParts(body, { abc: $.noop }); },    /^PageObjectError #16/, "function");
   });
 
 
