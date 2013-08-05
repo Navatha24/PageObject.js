@@ -286,7 +286,7 @@ $(document).ready(function() {
   });
 
   // PREPARE CONTAINER
-  test("when options.container is specified it should be a valid HTML DOM element or all should fail", function () {
+  test("when target.container is not a DOM element and options.container is specified, it should be a valid DOM element or all should fail", function () {
     throws(function(){  $.turnToPageObject({}, { container: null}); },         /^PageObjectError #02/, "null");
     throws(function(){  $.turnToPageObject({}, { container: true}); },         /^PageObjectError #02/, "true");
     throws(function(){  $.turnToPageObject({}, { container: false}); },        /^PageObjectError #02/, "false");
@@ -304,12 +304,29 @@ $(document).ready(function() {
     $.turnToPageObject(a, { container: undefined});
     ok( $(a.DOM.container).parent().length == 0 &&
         $(a.DOM.container)[0].tagName.toUpperCase() == $.turnToPageObject.priv.defaultOptions.containerElement.toUpperCase(),
-        "works when container is undefined and creates container of same tag as containerElement");
+        "works when options.container is undefined and creates container of same tag as containerElement");
     $.turnToPageObject.priv.defaultOptions.containerElement = old;
 
     var b = {};
     $.turnToPageObject(b, { container: $('body')[0]});
-    ok( b.DOM.container == $('body')[0], "works when container is an HTML DOM element and does not create new one");
+    ok( b.DOM.container == $('body')[0], "works when options.container is an HTML DOM element and does not create new one");
+  });
+
+  // PREPARE CONTAINER
+  test("when target.container is a DOM element, it should skip preparing a container", function () {
+    var body = $('body')[0], div = $('div:first')[0];
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: null});     ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: true});     ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: false});    ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: 12345});    ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: 123.5});    ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: Infinity}); ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: 'str'});    ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: /re/});     ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: []});       ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: {}});       ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: $.noop});   ok(po.DOM.container == body);
+    var po = { DOM: { container: body }}; $.turnToPageObject(po, { container: div });     ok(po.DOM.container == body);
   });
 
   // SET CONTAINER CLASS WHEN NEEDED

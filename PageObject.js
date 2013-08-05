@@ -204,13 +204,15 @@
     //   PREPARE CONTAINER
     //   -----------------
 
-    if (opts.container !== undefined) {
-      if (!$.isElement(opts.container)) {
-        throw new POE(2, "container is invalid!");
+    if (!$.isElement(namespace.container)) {
+      if (opts.container !== undefined) {
+        if (!$.isElement(opts.container)) {
+          throw new POE(2, "container is invalid!");
+        }
+        namespace.container = opts.container;
+      } else {
+        namespace.container = window.document.createElement(opts.containerElement);
       }
-      namespace.container = opts.container;
-    } else {
-      namespace.container = window.document.createElement(opts.containerElement);
     }
 
 
